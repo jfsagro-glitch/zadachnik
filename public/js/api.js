@@ -148,3 +148,4 @@ class APIClient {
 
 // Глобальный экземпляр API клиента
 window.api = new APIClient();
+

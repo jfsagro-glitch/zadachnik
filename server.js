@@ -42,3 +42,4 @@ app.listen(PORT, () => {
   console.log(`⏰ Session timeout: 6 hours`);
   console.log(`👥 Max concurrent sessions: 10`);
 });
+
