@@ -29,6 +29,9 @@ jobs:
         mkdir -p dist
         cp -r public/* dist/
         
+        # Копируем LAUNCH.html как index.html для GitHub Pages
+        cp LAUNCH.html dist/index.html
+        
         # Создаем простой index.html для GitHub Pages
         cat > dist/index.html << 'EOF'
         <!DOCTYPE html>

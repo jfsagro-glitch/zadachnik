@@ -52,10 +52,19 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 CURSOR Pipeline Demo running on port ${PORT}`);
-  console.log(`📊 Demo available at: https://cursor-pipeline-demo.glitch.me`);
+  console.log(`📊 Demo available at:`);
+  console.log(`   - Local: http://localhost:${PORT}`);
+  console.log(`   - GitHub Codespaces: https://${process.env.CODESPACE_NAME ? process.env.CODESPACE_NAME + '-3000.app.github.dev' : 'localhost:' + PORT}`);
   console.log(`⏰ Session timeout: 6 hours`);
   console.log(`👥 Max concurrent sessions: 10`);
+  console.log(`💾 Database: SQLite (demo_sessions.db)`);
+  
+  // Информация о Codespaces
+  if (process.env.CODESPACE_NAME) {
+    console.log(`\n🎉 GitHub Codespaces detected!`);
+    console.log(`📱 Open the app: https://${process.env.CODESPACE_NAME}-3000.app.github.dev`);
+  }
 });
 
