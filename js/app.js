@@ -336,6 +336,13 @@ class ZadachnikApp {
         this.updateAnalytics();
     }
     
+    updateAnalytics() {
+        // Обновляем аналитику при смене задач
+        if (this.currentTab === 'analytics') {
+            this.renderAnalytics();
+        }
+    }
+    
     renderKanbanView(tasksByStatus, users) {
         // Рендеринг задач в соответствующие колонки
         Object.keys(tasksByStatus).forEach(status => {
@@ -430,6 +437,73 @@ class ZadachnikApp {
             `;
             listContainer.appendChild(item);
         });
+    }
+    
+    getStatusText(status) {
+        const statusMap = {
+            'new': 'Новая',
+            'in-progress': 'В работе',
+            'review': 'На проверке',
+            'done': 'Выполнено'
+        };
+        return statusMap[status] || status;
+    }
+    
+    getPriorityText(priority) {
+        const priorityMap = {
+            'low': 'Низкий',
+            'medium': 'Средний',
+            'high': 'Высокий',
+            'critical': 'Критический'
+        };
+        return priorityMap[priority] || priority;
+    }
+    
+    getDeadlineClass(deadline) {
+        const now = new Date();
+        const deadlineDate = new Date(deadline);
+        const diffDays = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays < 0) return 'deadline-danger';
+        if (diffDays <= 2) return 'deadline-warning';
+        return 'deadline-ok';
+    }
+    
+    createTaskElement(task, users) {
+        const user = users.find(u => u.id === task.assigneeId);
+        const deadlineClass = this.getDeadlineClass(task.deadline);
+        const priorityClass = `priority-${task.priority}`;
+        const deadlineText = Utils.formatDate(task.deadline);
+        
+        const tags = task.tags ? task.tags.map(tag => 
+            `<span class="task-tag">${tag}</span>`
+        ).join('') : '';
+        
+        const taskElement = document.createElement('div');
+        taskElement.className = 'task';
+        taskElement.dataset.taskId = task.id;
+        taskElement.draggable = true;
+        taskElement.innerHTML = `
+            <div class="task-header">
+                <div class="task-title">${task.title}</div>
+                <span class="task-priority ${priorityClass}">
+                    ${this.getPriorityText(task.priority)}
+                </span>
+            </div>
+            <div class="task-description">${task.description}</div>
+            <div class="task-meta">
+                <span class="task-assignee">👤 ${user ? user.name : 'Не назначено'}</span>
+                <span class="task-deadline ${deadlineClass}">${deadlineText}</span>
+            </div>
+            ${tags ? `<div class="task-tags">${tags}</div>` : ''}
+        `;
+        
+        // Добавляем обработчик двойного клика
+        taskElement.addEventListener('dblclick', () => {
+            this.editTask(task.id);
+        });
+        
+        return taskElement;
     }
     
     renderInfoView(tasks, users) {
@@ -527,73 +601,6 @@ class ZadachnikApp {
                 document.removeEventListener('click', removeMenu);
             });
         }, 100);
-    }
-    
-    getStatusText(status) {
-        const statusMap = {
-            'new': 'Новая',
-            'in-progress': 'В работе',
-            'review': 'На проверке',
-            'done': 'Выполнено'
-        };
-        return statusMap[status] || status;
-    }
-    
-    getPriorityText(priority) {
-        const priorityMap = {
-            'low': 'Низкий',
-            'medium': 'Средний',
-            'high': 'Высокий',
-            'critical': 'Критический'
-        };
-        return priorityMap[priority] || priority;
-    }
-    
-    getDeadlineClass(deadline) {
-        const now = new Date();
-        const deadlineDate = new Date(deadline);
-        const diffDays = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
-        
-        if (diffDays < 0) return 'deadline-danger';
-        if (diffDays <= 2) return 'deadline-warning';
-        return 'deadline-ok';
-    }
-    
-    createTaskElement(task, users) {
-        const user = users.find(u => u.id === task.assigneeId);
-        const deadlineClass = this.getDeadlineClass(task.deadline);
-        const priorityClass = `priority-${task.priority}`;
-        const deadlineText = Utils.formatDate(task.deadline);
-        
-        const tags = task.tags ? task.tags.map(tag => 
-            `<span class="task-tag">${tag}</span>`
-        ).join('') : '';
-        
-        const taskElement = document.createElement('div');
-        taskElement.className = 'task';
-        taskElement.dataset.taskId = task.id;
-        taskElement.draggable = true;
-        taskElement.innerHTML = `
-            <div class="task-header">
-                <div class="task-title">${task.title}</div>
-                <span class="task-priority ${priorityClass}">
-                    ${this.getPriorityText(task.priority)}
-                </span>
-            </div>
-            <div class="task-description">${task.description}</div>
-            <div class="task-meta">
-                <span class="task-assignee">👤 ${user ? user.name : 'Не назначено'}</span>
-                <span class="task-deadline ${deadlineClass}">${deadlineText}</span>
-            </div>
-            ${tags ? `<div class="task-tags">${tags}</div>` : ''}
-        `;
-        
-        // Добавляем обработчик двойного клика
-        taskElement.addEventListener('dblclick', () => {
-            this.editTask(task.id);
-        });
-        
-        return taskElement;
     }
     
     renderAnalytics() {
@@ -867,6 +874,15 @@ class ZadachnikApp {
     editTask(taskId) {
         this.editingTaskId = taskId;
         this.openTaskModal(taskId);
+    }
+    
+    deleteTask(taskId) {
+        if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
+            storage.deleteTask(taskId);
+            this.tasks = this.tasks.filter(t => t.id !== taskId);
+            this.renderTasks();
+            Utils.showNotification('Задача удалена', 'success');
+        }
     }
     
     resetData() {
