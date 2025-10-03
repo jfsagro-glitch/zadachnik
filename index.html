@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 CURSOR Pipeline Demo - Система управления задачами</title>
+    <meta name="description" content="Демо-версия системы управления задачами и проектами CURSOR Pipeline. Kanban доска, управление командой, аналитика.">
+    <meta name="keywords" content="task management, kanban, project management, demo, cursor pipeline">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jfsagro-glitch.github.io/zadachnik/">
+    <meta property="og:title" content="CURSOR Pipeline Demo">
+    <meta property="og:description" content="Система управления задачами и проектами">
+    <meta property="og:image" content="https://jfsagro-glitch.github.io/zadachnik/assets/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://jfsagro-glitch.github.io/zadachnik/">
+    <meta property="twitter:title" content="CURSOR Pipeline Demo">
+    <meta property="twitter:description" content="Система управления задачами и проектами">
+    <meta property="twitter:image" content="https://jfsagro-glitch.github.io/zadachnik/assets/og-image.png">
+
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+</head>
+<body>
+    <!-- Демо-баннер -->
+    <div id="demo-banner" class="demo-banner">
+        <div class="banner-content">
+            <span class="banner-icon">🎮</span>
+            <span class="banner-text">Демо-режим - все данные сохраняются локально</span>
+            <div class="banner-controls">
+                <button id="reset-data" class="btn-reset">🔄 Сбросить данные</button>
+                <button id="export-data" class="btn-export">💾 Экспорт</button>
+                <button id="import-data" class="btn-import">📁 Импорт</button>
+            </div>
+        </div>
+        <div class="session-timer">
+            <span id="session-time">Сессия: 6:00:00</span>
+        </div>
+    </div>
+
+    <!-- Главное меню -->
+    <nav class="main-nav">
+        <div class="nav-brand">
+            <h1>🚀 CURSOR Pipeline</h1>
+            <span class="nav-subtitle">Система управления задачами</span>
+        </div>
+        <div class="nav-menu">
+            <button class="nav-btn active" data-tab="kanban">
+                📋 Kanban
+            </button>
+            <button class="nav-btn" data-tab="analytics">
+                📊 Аналитика
+            </button>
+            <button class="nav-btn" data-tab="team">
+                👥 Команда
+            </button>
+            <button class="nav-btn" data-tab="settings">
+                ⚙️ Настройки
+            </button>
+        </div>
+    </nav>
+
+    <!-- Контент -->
+    <main class="main-content">
+        
+        <!-- Kanban доска -->
+        <section id="kanban-tab" class="tab-content active">
+            <div class="kanban-header">
+                <h2>📋 Kanban Доска</h2>
+                <button id="new-task-btn" class="btn-primary">
+                    ➕ Новая задача
+                </button>
+            </div>
+            
+            <div class="kanban-board">
+                <div class="kanban-column" data-status="new">
+                    <div class="column-header">
+                        <h3>📝 Новые</h3>
+                        <span class="task-count" id="count-new">0</span>
+                    </div>
+                    <div class="task-list" id="tasks-new">
+                        <!-- Задачи будут добавляться динамически -->
+                    </div>
+                </div>
+                
+                <div class="kanban-column" data-status="in-progress">
+                    <div class="column-header">
+                        <h3>⚡ В работе</h3>
+                        <span class="task-count" id="count-progress">0</span>
+                    </div>
+                    <div class="task-list" id="tasks-progress">
+                        <!-- Задачи будут добавляться динамически -->
+                    </div>
+                </div>
+                
+                <div class="kanban-column" data-status="review">
+                    <div class="column-header">
+                        <h3>👀 На проверке</h3>
+                        <span class="task-count" id="count-review">0</span>
+                    </div>
+                    <div class="task-list" id="tasks-review">
+                        <!-- Задачи будут добавляться динамически -->
+                    </div>
+                </div>
+                
+                <div class="kanban-column" data-status="done">
+                    <div class="column-header">
+                        <h3>✅ Выполнено</h3>
+                        <span class="task-count" id="count-done">0</span>
+                    </div>
+                    <div class="task-list" id="tasks-done">
+                        <!-- Задачи будут добавляться динамически -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Аналитика -->
+        <section id="analytics-tab" class="tab-content">
+            <div class="analytics-header">
+                <h2>📊 Аналитика и метрики</h2>
+            </div>
+            
+            <div class="analytics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon">✅</div>
+                    <div class="metric-content">
+                        <h3 id="metric-completed">0</h3>
+                        <p>Выполнено задач</p>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">⏰</div>
+                    <div class="metric-content">
+                        <h3 id="metric-overdue">0</h3>
+                        <p>Просрочено</p>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">📈</div>
+                    <div class="metric-content">
+                        <h3 id="metric-completion">0%</h3>
+                        <p>Процент выполнения</p>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon">👥</div>
+                    <div class="metric-content">
+                        <h3 id="metric-active">0</h3>
+                        <p>Активных пользователей</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="charts-section">
+                <div class="chart-container">
+                    <h3>📊 Распределение задач по статусам</h3>
+                    <canvas id="status-chart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>👥 Загрузка команды</h3>
+                    <canvas id="team-chart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Команда -->
+        <section id="team-tab" class="tab-content">
+            <div class="team-header">
+                <h2>👥 Команда</h2>
+                <button id="add-user-btn" class="btn-primary">
+                    👤 Добавить пользователя
+                </button>
+            </div>
+            
+            <div class="team-grid" id="team-grid">
+                <!-- Пользователи будут добавляться динамически -->
+            </div>
+        </section>
+
+        <!-- Настройки -->
+        <section id="settings-tab" class="tab-content">
+            <div class="settings-header">
+                <h2>⚙️ Настройки</h2>
+            </div>
+            
+            <div class="settings-grid">
+                <div class="setting-group">
+                    <h3>🎨 Внешний вид</h3>
+                    <div class="setting-item">
+                        <label>Тема:</label>
+                        <select id="theme-select">
+                            <option value="light">Светлая</option>
+                            <option value="dark">Темная</option>
+                            <option value="auto">Авто</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <h3>💾 Данные</h3>
+                    <div class="setting-item">
+                        <button id="clear-all-data" class="btn-danger">
+                            🗑️ Очистить все данные
+                        </button>
+                    </div>
+                    <div class="setting-item">
+                        <button id="load-demo-data" class="btn-secondary">
+                            📋 Загрузить демо-данные
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <h3>ℹ️ Информация</h3>
+                    <div class="info-item">
+                        <p><strong>Версия:</strong> 1.0.0</p>
+                        <p><strong>Хостинг:</strong> GitHub Pages</p>
+                        <p><strong>Хранилище:</strong> localStorage</p>
+                        <p><strong>Данные:</strong> Сохраняются локально в браузере</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Модальные окна -->
+    
+    <!-- Модальное окно новой задачи -->
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Новая задача</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="task-form">
+                <div class="form-group">
+                    <label for="task-title">Название задачи:</label>
+                    <input type="text" id="task-title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-description">Описание:</label>
+                    <textarea id="task-description" rows="3"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-priority">Приоритет:</label>
+                        <select id="task-priority">
+                            <option value="low">Низкий</option>
+                            <option value="medium" selected>Средний</option>
+                            <option value="high">Высокий</option>
+                            <option value="critical">Критический</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="task-assignee">Исполнитель:</label>
+                        <select id="task-assignee">
+                            <option value="">Не назначено</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-deadline">Срок выполнения:</label>
+                        <input type="date" id="task-deadline">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="task-tags">Теги:</label>
+                        <input type="text" id="task-tags" placeholder="разработка, срочно, важное">
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary modal-close">Отмена</button>
+                    <button type="submit" class="btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно пользователя -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="user-modal-title">Новый пользователь</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="user-form">
+                <div class="form-group">
+                    <label for="user-name">Имя:</label>
+                    <input type="text" id="user-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="user-role">Роль:</label>
+                    <select id="user-role">
+                        <option value="executor">Исполнитель</option>
+                        <option value="supervisor">Супервайзер</option>
+                        <option value="manager">Руководитель</option>
+                        <option value="business">Бизнес-пользователь</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="user-department">Отдел:</label>
+                    <input type="text" id="user-department">
+                </div>
+                
+                <div class="form-group">
+                    <label for="user-email">Email:</label>
+                    <input type="email" id="user-email">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary modal-close">Отмена</button>
+                    <button type="submit" class="btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Уведомления -->
+    <div id="notifications" class="notifications-container"></div>
+
+    <!-- Загрузка скриптов -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
