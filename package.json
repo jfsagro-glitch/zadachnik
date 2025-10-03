@@ -5,12 +5,14 @@
   "main": "server.js",
   "scripts": {
     "start": "node start.js",
+    "start:auto": "node auto-setup.js",
     "start:server": "node server.js",
     "start:dev": "npm install && node server.js",
     "dev": "nodemon server.js",
     "init-db": "node src/backend/database/init-db.js",
     "test": "node health-check.js",
     "quick-test": "node quick-test.js",
+    "auto-deploy": "echo '🚀 Автоматический деплой через GitHub Actions' && exit 0",
     "build": "echo 'No build step required' && exit 0"
   },
   "dependencies": {

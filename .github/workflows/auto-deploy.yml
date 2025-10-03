@@ -1,0 +1,107 @@
+name: 🚀 Автоматический деплой CURSOR Pipeline Demo
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  # Автоматическая проверка
+  test:
+    runs-on: ubuntu-latest
+    name: 🧪 Автоматическое тестирование
+    
+    steps:
+    - name: 📥 Checkout кода
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 🔧 Установка зависимостей
+      run: npm ci
+      
+    - name: 🧪 Запуск тестов
+      run: npm run quick-test
+      
+    - name: 🔍 Проверка здоровья
+      run: npm test
+
+  # Автоматический деплой на GitHub Pages
+  deploy-pages:
+    needs: test
+    runs-on: ubuntu-latest
+    name: 🌐 Деплой на GitHub Pages
+    
+    steps:
+    - name: 📥 Checkout кода
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 🔧 Установка зависимостей
+      run: npm ci
+      
+    - name: 🏗️ Сборка статической версии
+      run: |
+        mkdir -p dist
+        cp -r public/* dist/
+        cp LAUNCH.html dist/index.html
+        
+    - name: 🚀 Деплой на GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
+        cname: jfsagro-glitch.github.io
+
+  # Автоматическое создание Codespace
+  create-codespace:
+    needs: test
+    runs-on: ubuntu-latest
+    name: ☁️ Подготовка Codespace
+    
+    steps:
+    - name: 📥 Checkout кода
+      uses: actions/checkout@v4
+      
+    - name: 📝 Обновление README с ссылкой на Codespace
+      run: |
+        echo "## 🚀 Быстрый запуск" >> README.md
+        echo "" >> README.md
+        echo "### ⚡ Автоматический запуск в Codespaces" >> README.md
+        echo "" >> README.md
+        echo "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=jfsagro-glitch%2Fzadachnik)" >> README.md
+        echo "" >> README.md
+        echo "**Нажмите на бейдж выше для автоматического запуска!**" >> README.md
+        
+    - name: 💾 Commit обновленного README
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add README.md
+        git commit -m "🤖 Автоматическое обновление ссылки на Codespace" || exit 0
+        git push || exit 0
+
+  # Уведомления
+  notify:
+    needs: [test, deploy-pages, create-codespace]
+    runs-on: ubuntu-latest
+    name: 📢 Уведомления
+    
+    steps:
+    - name: ✅ Успешный деплой
+      run: |
+        echo "🎉 CURSOR Pipeline Demo успешно развернут!"
+        echo "🌐 GitHub Pages: https://jfsagro-glitch.github.io/zadachnik/"
+        echo "☁️ GitHub Codespaces: https://github.com/codespaces/new?repo=jfsagro-glitch/zadachnik"
+        echo "📖 Документация: https://github.com/jfsagro-glitch/zadachnik/blob/main/README.md"
