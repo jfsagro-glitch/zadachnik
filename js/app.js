@@ -125,6 +125,16 @@ class ZadachnikApp {
                 Utils.showNotification('Тема изменена', 'success');
             });
         }
+        
+        // Компактный режим
+        const compactModeCheckbox = document.getElementById('compact-mode');
+        if (compactModeCheckbox) {
+            compactModeCheckbox.checked = Utils.getCompactMode();
+            compactModeCheckbox.addEventListener('change', (e) => {
+                Utils.setCompactMode(e.target.checked);
+                Utils.showNotification('Компактный режим ' + (e.target.checked ? 'включен' : 'выключен'), 'success');
+            });
+        }
     }
     
     setupDragAndDrop() {

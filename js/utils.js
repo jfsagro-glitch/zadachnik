@@ -89,11 +89,29 @@ class Utils {
         return localStorage.getItem('zadachnik_theme') || 'light';
     }
     
+    static setCompactMode(isCompact) {
+        if (isCompact) {
+            document.body.classList.add('compact-mode');
+        } else {
+            document.body.classList.remove('compact-mode');
+        }
+        localStorage.setItem('zadachnik_compact_mode', isCompact);
+    }
+    
+    static getCompactMode() {
+        return localStorage.getItem('zadachnik_compact_mode') === 'true';
+    }
+    
     static initTheme() {
         const savedTheme = this.getTheme();
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         const theme = savedTheme === 'auto' ? systemTheme : savedTheme;
         this.setTheme(theme);
+    }
+    
+    static initCompactMode() {
+        const isCompact = this.getCompactMode();
+        this.setCompactMode(isCompact);
     }
     
     // Уведомления
@@ -378,6 +396,7 @@ class Utils {
     // Инициализация
     static init() {
         this.initTheme();
+        this.initCompactMode();
         this.startSessionTimer();
         
         // Обработка изменения темы системы
