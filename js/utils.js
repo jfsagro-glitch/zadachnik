@@ -116,6 +116,7 @@ class Utils {
         document.getElementById('kanban-view').style.display = 'none';
         document.getElementById('table-view').style.display = 'none';
         document.getElementById('list-view').style.display = 'none';
+        document.getElementById('info-view').style.display = 'none';
         
         // Показать выбранный вид
         switch(mode) {
@@ -127,6 +128,9 @@ class Utils {
                 break;
             case 'list':
                 document.getElementById('list-view').style.display = 'block';
+                break;
+            case 'info':
+                document.getElementById('info-view').style.display = 'block';
                 break;
         }
     }

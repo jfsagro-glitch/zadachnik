@@ -756,6 +756,39 @@ body {
         flex-wrap: wrap;
         justify-content: center;
     }
+    
+    /* Мобильная адаптация информативного вида */
+    .tasks-grid {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+    
+    .info-task {
+        padding: 8px;
+    }
+    
+    .info-task-title {
+        font-size: 0.9em;
+    }
+    
+    .info-task-description {
+        font-size: 0.8em;
+    }
+    
+    .info-task-meta {
+        font-size: 0.7em;
+    }
+    
+    .info-header {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+    
+    .info-stats {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1157,6 +1190,159 @@ body.compact-mode .setting-item {
     gap: 4px;
 }
 
+/* Информативный вид */
+.info-view {
+    display: none;
+}
+
+.info-view.active {
+    display: block;
+}
+
+.info-header {
+    background: var(--bg-tertiary);
+    padding: 8px 12px;
+    border-radius: var(--border-radius);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 0.8em;
+}
+
+.stat-item {
+    color: var(--text-secondary);
+}
+
+.stat-item strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 6px;
+}
+
+.info-task {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 6px 8px;
+    transition: var(--transition);
+    cursor: pointer;
+    position: relative;
+}
+
+.info-task:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+}
+
+.info-task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+}
+
+.info-task-id {
+    font-size: 0.7em;
+    color: var(--primary-color);
+    font-weight: 600;
+    background: var(--bg-secondary);
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+.info-task-status {
+    font-size: 0.6em;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.info-task-title {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.info-task-description {
+    font-size: 0.7em;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.info-task-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.6em;
+}
+
+.info-task-assignee {
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60%;
+}
+
+.info-task-deadline {
+    font-weight: 600;
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-size: 0.6em;
+}
+
+.info-task-priority {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid var(--bg-primary);
+}
+
+.priority-indicator-low { background: #2e7d32; }
+.priority-indicator-medium { background: #f57c00; }
+.priority-indicator-high { background: #d32f2f; }
+.priority-indicator-critical { background: #c2185b; }
+
+.info-task-tags {
+    margin-top: 3px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+}
+
+.info-tag {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-size: 0.5em;
+    line-height: 1;
+}
+
 /* Компактный табличный вид */
 body.compact-mode .tasks-table th,
 body.compact-mode .tasks-table td {
@@ -1176,6 +1362,37 @@ body.compact-mode .list-item {
 body.compact-mode .list-item .task-meta {
     gap: 6px;
     font-size: 0.6em;
+}
+
+/* Компактный информативный вид */
+body.compact-mode .tasks-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 4px;
+}
+
+body.compact-mode .info-task {
+    padding: 4px 6px;
+}
+
+body.compact-mode .info-task-title {
+    font-size: 0.7em;
+}
+
+body.compact-mode .info-task-description {
+    font-size: 0.6em;
+}
+
+body.compact-mode .info-task-meta {
+    font-size: 0.5em;
+}
+
+body.compact-mode .info-header {
+    padding: 6px 8px;
+}
+
+body.compact-mode .info-stats {
+    gap: 10px;
+    font-size: 0.7em;
 }
 
 /* Утилиты */

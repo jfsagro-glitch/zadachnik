@@ -328,6 +328,9 @@ class ZadachnikApp {
             case 'list':
                 this.renderListView(tasks, users);
                 break;
+            case 'info':
+                this.renderInfoView(tasks, users);
+                break;
         }
         
         this.updateAnalytics();
@@ -427,6 +430,103 @@ class ZadachnikApp {
             `;
             listContainer.appendChild(item);
         });
+    }
+    
+    renderInfoView(tasks, users) {
+        const gridContainer = document.getElementById('tasks-grid');
+        const totalElement = document.getElementById('info-total');
+        const activeElement = document.getElementById('info-active');
+        const doneElement = document.getElementById('info-done');
+        
+        if (!gridContainer) return;
+        
+        gridContainer.innerHTML = '';
+        
+        // Подсчет статистики
+        const total = tasks.length;
+        const active = tasks.filter(task => task.status !== 'done').length;
+        const done = tasks.filter(task => task.status === 'done').length;
+        
+        // Обновление статистики
+        if (totalElement) totalElement.textContent = total;
+        if (activeElement) activeElement.textContent = active;
+        if (doneElement) doneElement.textContent = done;
+        
+        // Рендеринг задач в сетке
+        tasks.forEach(task => {
+            const user = users.find(u => u.id === task.assigneeId);
+            const item = document.createElement('div');
+            item.className = 'info-task';
+            item.dataset.taskId = task.id;
+            
+            // Обрезка текста для компактности
+            const title = task.title.length > 25 ? task.title.substring(0, 25) + '...' : task.title;
+            const description = task.description.length > 35 ? task.description.substring(0, 35) + '...' : task.description;
+            const assigneeName = user ? (user.name.length > 12 ? user.name.substring(0, 12) + '...' : user.name) : 'Не назначен';
+            
+            item.innerHTML = `
+                <div class="info-task-header">
+                    <span class="info-task-id">#${task.id}</span>
+                    <span class="info-task-status status-${task.status}">${this.getStatusText(task.status)}</span>
+                </div>
+                <div class="info-task-title" title="${task.title}">${title}</div>
+                <div class="info-task-description" title="${task.description}">${description}</div>
+                <div class="info-task-meta">
+                    <span class="info-task-assignee" title="${user ? user.name : 'Не назначен'}">👤 ${assigneeName}</span>
+                    <span class="info-task-deadline ${this.getDeadlineClass(task.deadline)}" title="${Utils.formatDate(task.deadline)}">${Utils.formatDate(task.deadline)}</span>
+                </div>
+                ${task.tags && task.tags.length > 0 ? `
+                    <div class="info-task-tags">
+                        ${task.tags.slice(0, 3).map(tag => `<span class="info-tag">${tag}</span>`).join('')}
+                        ${task.tags.length > 3 ? `<span class="info-tag">+${task.tags.length - 3}</span>` : ''}
+                    </div>
+                ` : ''}
+                <div class="info-task-priority priority-indicator-${task.priority}" title="${this.getPriorityText(task.priority)}"></div>
+            `;
+            
+            // Добавляем обработчики событий
+            item.addEventListener('click', () => {
+                this.editTask(task.id);
+            });
+            
+            item.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                this.showTaskContextMenu(e, task.id);
+            });
+            
+            gridContainer.appendChild(item);
+        });
+    }
+    
+    showTaskContextMenu(event, taskId) {
+        // Простое контекстное меню
+        const menu = document.createElement('div');
+        menu.style.cssText = `
+            position: fixed;
+            top: ${event.clientY}px;
+            left: ${event.clientX}px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            padding: 4px;
+        `;
+        
+        menu.innerHTML = `
+            <button class="action-btn" onclick="app.editTask('${taskId}')" style="width: 100%; margin: 2px 0;">✏️ Редактировать</button>
+            <button class="action-btn" onclick="app.deleteTask('${taskId}')" style="width: 100%; margin: 2px 0;">🗑️ Удалить</button>
+        `;
+        
+        document.body.appendChild(menu);
+        
+        // Удаляем меню при клике вне его
+        setTimeout(() => {
+            document.addEventListener('click', function removeMenu() {
+                menu.remove();
+                document.removeEventListener('click', removeMenu);
+            });
+        }, 100);
     }
     
     getStatusText(status) {
