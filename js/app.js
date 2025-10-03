@@ -135,6 +135,17 @@ class ZadachnikApp {
                 Utils.showNotification('Компактный режим ' + (e.target.checked ? 'включен' : 'выключен'), 'success');
             });
         }
+        
+        // Выбор вида отображения
+        const viewModeSelect = document.getElementById('view-mode');
+        if (viewModeSelect) {
+            viewModeSelect.value = Utils.getViewMode();
+            viewModeSelect.addEventListener('change', (e) => {
+                Utils.setViewMode(e.target.value);
+                this.renderTasks(); // Перерисовка задач в новом виде
+                Utils.showNotification('Вид изменен на: ' + e.target.options[e.target.selectedIndex].text, 'success');
+            });
+        }
     }
     
     setupDragAndDrop() {
@@ -275,6 +286,214 @@ class ZadachnikApp {
                 this.editTask(taskId);
             });
         });
+    }
+    
+    renderTasks() {
+        const tasks = Storage.getTasks();
+        const users = Storage.getUsers();
+        const viewMode = Utils.getViewMode();
+        
+        // Очистка всех колонок
+        document.querySelectorAll('.task-list').forEach(list => {
+            list.innerHTML = '';
+        });
+        
+        // Сброс счетчиков
+        document.querySelectorAll('.task-count').forEach(counter => {
+            counter.textContent = '0';
+        });
+        
+        // Группировка задач по статусам
+        const tasksByStatus = {
+            new: [],
+            'in-progress': [],
+            review: [],
+            done: []
+        };
+        
+        tasks.forEach(task => {
+            if (tasksByStatus[task.status]) {
+                tasksByStatus[task.status].push(task);
+            }
+        });
+        
+        // Рендеринг в зависимости от выбранного вида
+        switch(viewMode) {
+            case 'kanban':
+                this.renderKanbanView(tasksByStatus, users);
+                break;
+            case 'table':
+                this.renderTableView(tasks, users);
+                break;
+            case 'list':
+                this.renderListView(tasks, users);
+                break;
+        }
+        
+        this.updateAnalytics();
+    }
+    
+    renderKanbanView(tasksByStatus, users) {
+        // Рендеринг задач в соответствующие колонки
+        Object.keys(tasksByStatus).forEach(status => {
+            const taskList = document.getElementById(`tasks-${status}`);
+            const counter = document.getElementById(`count-${status}`);
+            
+            if (taskList && counter) {
+                counter.textContent = tasksByStatus[status].length;
+                
+                tasksByStatus[status].forEach(task => {
+                    const taskElement = this.createTaskElement(task, users);
+                    taskList.appendChild(taskElement);
+                });
+            }
+        });
+    }
+    
+    renderTableView(tasks, users) {
+        const tbody = document.getElementById('tasks-table-body');
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        
+        tasks.forEach(task => {
+            const user = users.find(u => u.id === task.assigneeId);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="task-id">#${task.id}</td>
+                <td class="task-title">${task.title}</td>
+                <td class="task-description" title="${task.description}">${task.description}</td>
+                <td class="task-status">
+                    <span class="status-badge status-${task.status}">${this.getStatusText(task.status)}</span>
+                </td>
+                <td class="task-priority">
+                    <span class="priority-badge priority-${task.priority}">${this.getPriorityText(task.priority)}</span>
+                </td>
+                <td class="task-assignee">${user ? user.name : 'Не назначен'}</td>
+                <td class="task-deadline">
+                    <span class="deadline-badge ${this.getDeadlineClass(task.deadline)}">${Utils.formatDate(task.deadline)}</span>
+                </td>
+                <td class="task-tags">
+                    <div class="tags-cell">
+                        ${task.tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('')}
+                    </div>
+                </td>
+                <td class="task-actions">
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="app.editTask('${task.id}')" title="Редактировать">✏️</button>
+                        <button class="action-btn" onclick="app.deleteTask('${task.id}')" title="Удалить">🗑️</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+    
+    renderListView(tasks, users) {
+        const listContainer = document.getElementById('tasks-list');
+        if (!listContainer) return;
+        
+        listContainer.innerHTML = '';
+        
+        tasks.forEach(task => {
+            const user = users.find(u => u.id === task.assigneeId);
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.innerHTML = `
+                <div class="task-id">#${task.id}</div>
+                <div class="task-content">
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-description">${task.description}</div>
+                    <div class="task-meta">
+                        <div class="task-status">
+                            <span class="status-badge status-${task.status}">${this.getStatusText(task.status)}</span>
+                        </div>
+                        <div class="task-priority">
+                            <span class="priority-badge priority-${task.priority}">${this.getPriorityText(task.priority)}</span>
+                        </div>
+                        <div class="task-assignee">👤 ${user ? user.name : 'Не назначен'}</div>
+                        <div class="task-deadline">
+                            <span class="deadline-badge ${this.getDeadlineClass(task.deadline)}">📅 ${Utils.formatDate(task.deadline)}</span>
+                        </div>
+                        <div class="task-tags">
+                            ${task.tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <button class="action-btn" onclick="app.editTask('${task.id}')" title="Редактировать">✏️</button>
+                    <button class="action-btn" onclick="app.deleteTask('${task.id}')" title="Удалить">🗑️</button>
+                </div>
+            `;
+            listContainer.appendChild(item);
+        });
+    }
+    
+    getStatusText(status) {
+        const statusMap = {
+            'new': 'Новая',
+            'in-progress': 'В работе',
+            'review': 'На проверке',
+            'done': 'Выполнено'
+        };
+        return statusMap[status] || status;
+    }
+    
+    getPriorityText(priority) {
+        const priorityMap = {
+            'low': 'Низкий',
+            'medium': 'Средний',
+            'high': 'Высокий',
+            'critical': 'Критический'
+        };
+        return priorityMap[priority] || priority;
+    }
+    
+    getDeadlineClass(deadline) {
+        const now = new Date();
+        const deadlineDate = new Date(deadline);
+        const diffDays = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays < 0) return 'deadline-danger';
+        if (diffDays <= 2) return 'deadline-warning';
+        return 'deadline-ok';
+    }
+    
+    createTaskElement(task, users) {
+        const user = users.find(u => u.id === task.assigneeId);
+        const deadlineClass = this.getDeadlineClass(task.deadline);
+        const priorityClass = `priority-${task.priority}`;
+        const deadlineText = Utils.formatDate(task.deadline);
+        
+        const tags = task.tags ? task.tags.map(tag => 
+            `<span class="task-tag">${tag}</span>`
+        ).join('') : '';
+        
+        const taskElement = document.createElement('div');
+        taskElement.className = 'task';
+        taskElement.dataset.taskId = task.id;
+        taskElement.draggable = true;
+        taskElement.innerHTML = `
+            <div class="task-header">
+                <div class="task-title">${task.title}</div>
+                <span class="task-priority ${priorityClass}">
+                    ${this.getPriorityText(task.priority)}
+                </span>
+            </div>
+            <div class="task-description">${task.description}</div>
+            <div class="task-meta">
+                <span class="task-assignee">👤 ${user ? user.name : 'Не назначено'}</span>
+                <span class="task-deadline ${deadlineClass}">${deadlineText}</span>
+            </div>
+            ${tags ? `<div class="task-tags">${tags}</div>` : ''}
+        `;
+        
+        // Добавляем обработчик двойного клика
+        taskElement.addEventListener('dblclick', () => {
+            this.editTask(task.id);
+        });
+        
+        return taskElement;
     }
     
     renderAnalytics() {
@@ -618,4 +837,8 @@ class ZadachnikApp {
 // Инициализация приложения при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new ZadachnikApp();
+    // Рендерим задачи после инициализации
+    setTimeout(() => {
+        window.app.renderTasks();
+    }, 100);
 });

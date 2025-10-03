@@ -102,6 +102,35 @@ class Utils {
         return localStorage.getItem('zadachnik_compact_mode') === 'true';
     }
     
+    static setViewMode(mode) {
+        localStorage.setItem('zadachnik_view_mode', mode);
+        this.updateViewMode(mode);
+    }
+    
+    static getViewMode() {
+        return localStorage.getItem('zadachnik_view_mode') || 'kanban';
+    }
+    
+    static updateViewMode(mode) {
+        // Скрыть все виды
+        document.getElementById('kanban-view').style.display = 'none';
+        document.getElementById('table-view').style.display = 'none';
+        document.getElementById('list-view').style.display = 'none';
+        
+        // Показать выбранный вид
+        switch(mode) {
+            case 'kanban':
+                document.getElementById('kanban-view').style.display = 'block';
+                break;
+            case 'table':
+                document.getElementById('table-view').style.display = 'block';
+                break;
+            case 'list':
+                document.getElementById('list-view').style.display = 'block';
+                break;
+        }
+    }
+    
     static initTheme() {
         const savedTheme = this.getTheme();
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -112,6 +141,11 @@ class Utils {
     static initCompactMode() {
         const isCompact = this.getCompactMode();
         this.setCompactMode(isCompact);
+    }
+    
+    static initViewMode() {
+        const viewMode = this.getViewMode();
+        this.updateViewMode(viewMode);
     }
     
     // Уведомления
@@ -397,6 +431,7 @@ class Utils {
     static init() {
         this.initTheme();
         this.initCompactMode();
+        this.initViewMode();
         this.startSessionTimer();
         
         // Обработка изменения темы системы

@@ -910,6 +910,274 @@ body.compact-mode .setting-item {
     margin-bottom: 6px;
 }
 
+/* Табличный вид */
+.table-view {
+    display: none;
+}
+
+.table-view.active {
+    display: block;
+}
+
+.tasks-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.tasks-table th,
+.tasks-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tasks-table th {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9em;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.tasks-table td {
+    font-size: 0.9em;
+    color: var(--text-primary);
+}
+
+.tasks-table tr:hover {
+    background: var(--bg-secondary);
+}
+
+.tasks-table .task-id {
+    width: 60px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.tasks-table .task-title {
+    min-width: 200px;
+    font-weight: 500;
+}
+
+.tasks-table .task-description {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tasks-table .task-status {
+    width: 100px;
+}
+
+.tasks-table .task-priority {
+    width: 80px;
+}
+
+.tasks-table .task-assignee {
+    width: 120px;
+}
+
+.tasks-table .task-deadline {
+    width: 100px;
+}
+
+.tasks-table .task-tags {
+    width: 150px;
+}
+
+.tasks-table .task-actions {
+    width: 80px;
+    text-align: center;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-new { background: #e3f2fd; color: #1976d2; }
+.status-in-progress { background: #fff3e0; color: #f57c00; }
+.status-review { background: #f3e5f5; color: #7b1fa2; }
+.status-done { background: #e8f5e8; color: #2e7d32; }
+
+.priority-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priority-low { background: #e8f5e8; color: #2e7d32; }
+.priority-medium { background: #fff3e0; color: #f57c00; }
+.priority-high { background: #ffebee; color: #d32f2f; }
+.priority-critical { background: #fce4ec; color: #c2185b; }
+
+.deadline-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    font-weight: 600;
+}
+
+.deadline-ok { background: #e8f5e8; color: #2e7d32; }
+.deadline-warning { background: #fff3e0; color: #f57c00; }
+.deadline-danger { background: #ffebee; color: #d32f2f; }
+
+.tags-cell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.tag-badge {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 0.6em;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.action-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 2px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.7em;
+    transition: var(--transition);
+}
+
+.action-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Списочный вид */
+.list-view {
+    display: none;
+}
+
+.list-view.active {
+    display: block;
+}
+
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.list-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: var(--transition);
+}
+
+.list-item:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+}
+
+.list-item .task-id {
+    width: 60px;
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.9em;
+}
+
+.list-item .task-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.list-item .task-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    font-size: 0.9em;
+}
+
+.list-item .task-description {
+    color: var(--text-secondary);
+    font-size: 0.8em;
+    margin-bottom: 6px;
+}
+
+.list-item .task-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.7em;
+}
+
+.list-item .task-status,
+.list-item .task-priority,
+.list-item .task-assignee,
+.list-item .task-deadline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.list-item .task-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.list-item .task-actions {
+    display: flex;
+    gap: 4px;
+}
+
+/* Компактный табличный вид */
+body.compact-mode .tasks-table th,
+body.compact-mode .tasks-table td {
+    padding: 4px 6px;
+    font-size: 0.8em;
+}
+
+body.compact-mode .tasks-table .task-description {
+    max-width: 200px;
+}
+
+body.compact-mode .list-item {
+    padding: 8px;
+    gap: 10px;
+}
+
+body.compact-mode .list-item .task-meta {
+    gap: 6px;
+    font-size: 0.6em;
+}
+
 /* Утилиты */
 .text-center { text-align: center; }
 .text-right { text-align: right; }

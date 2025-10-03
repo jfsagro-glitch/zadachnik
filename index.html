@@ -75,7 +75,9 @@
                 </button>
             </div>
             
-            <div class="kanban-board">
+            <!-- Kanban вид -->
+            <div class="kanban-view" id="kanban-view">
+                <div class="kanban-board">
                 <div class="kanban-column" data-status="new">
                     <div class="column-header">
                         <h3>📝 Новые</h3>
@@ -114,6 +116,37 @@
                     <div class="task-list" id="tasks-done">
                         <!-- Задачи будут добавляться динамически -->
                     </div>
+                </div>
+            </div>
+            
+            <!-- Табличный вид -->
+            <div class="table-view" id="table-view">
+                <div class="table-container">
+                    <table class="tasks-table" id="tasks-table">
+                        <thead>
+                            <tr>
+                                <th class="task-id">ID</th>
+                                <th class="task-title">Название</th>
+                                <th class="task-description">Описание</th>
+                                <th class="task-status">Статус</th>
+                                <th class="task-priority">Приоритет</th>
+                                <th class="task-assignee">Исполнитель</th>
+                                <th class="task-deadline">Срок</th>
+                                <th class="task-tags">Теги</th>
+                                <th class="task-actions">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasks-table-body">
+                            <!-- Задачи будут добавлены через JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Списочный вид -->
+            <div class="list-view" id="list-view">
+                <div class="tasks-list" id="tasks-list">
+                    <!-- Задачи будут добавлены через JavaScript -->
                 </div>
             </div>
         </section>
@@ -207,6 +240,14 @@
                             <input type="checkbox" id="compact-mode" style="width: auto; margin-right: 8px;">
                             Компактный режим
                         </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>Вид отображения:</label>
+                        <select id="view-mode">
+                            <option value="kanban">Kanban доска</option>
+                            <option value="table">Табличный вид</option>
+                            <option value="list">Список</option>
+                        </select>
                     </div>
                 </div>
                 
