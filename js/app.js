@@ -1,9 +1,9 @@
 /**
- * Основное приложение CURSOR Pipeline Demo
+ * Основное приложение ЗАДАЧНИК
  * Статическая версия без серверной части
  */
 
-class CursorPipelineApp {
+class ZadachnikApp {
     constructor() {
         this.currentTab = 'kanban';
         this.draggedTask = null;
@@ -16,7 +16,7 @@ class CursorPipelineApp {
         this.render();
         this.setupDragAndDrop();
         
-        Utils.showNotification('CURSOR Pipeline Demo загружен!', 'success');
+        Utils.showNotification('ЗАДАЧНИК загружен!', 'success');
     }
     
     setupEventListeners() {
@@ -607,5 +607,5 @@ class CursorPipelineApp {
 
 // Инициализация приложения при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    window.app = new CursorPipelineApp();
+    window.app = new ZadachnikApp();
 });

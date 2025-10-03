@@ -1,7 +1,7 @@
 {
-  "name": "cursor-pipeline-demo",
+  "name": "zadachnik",
   "version": "1.0.0",
-  "description": "Demo version of CURSOR Pipeline task management system for GitHub deployment",
+  "description": "ЗАДАЧНИК - система управления задачами и проектами",
   "main": "server.js",
   "scripts": {
     "start": "node start.js",
@@ -31,13 +31,13 @@
   },
   "keywords": [
     "task-management",
-    "demo",
+    "zadachnik",
     "github",
-    "codespaces",
-    "pipeline",
-    "kanban"
+    "kanban",
+    "project-management",
+    "localStorage"
   ],
-  "author": "CURSOR Pipeline Team",
+  "author": "ЗАДАЧНИК Team",
   "license": "MIT"
 }
 

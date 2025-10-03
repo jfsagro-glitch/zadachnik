@@ -160,7 +160,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🚀 CURSOR Pipeline Demo</h1>
+        <h1>🚀 ЗАДАЧНИК</h1>
         <p class="subtitle">Система управления задачами и проектами</p>
         
         <a href="https://github.com/codespaces/new?hide_repo_select=true&repo=jfsagro-glitch%2Fzadachnik&ref=main" 
@@ -214,12 +214,15 @@
         
         <div class="warning">
             <h3>⚠️ Альтернативные способы запуска</h3>
-            <p>Если Codespaces недоступен, используйте локальный запуск:</p>
+            <p>Для статической версии откройте:</p>
+            <div class="code-block">
+https://jfsagro-glitch.github.io/zadachnik/
+            </div>
+            <p>Или локальный запуск:</p>
             <div class="code-block">
 git clone https://github.com/jfsagro-glitch/zadachnik.git
 cd zadachnik
-npm install
-npm start
+# Откройте index.html в браузере
             </div>
         </div>
         
@@ -239,7 +242,7 @@ npm start
         
         // Обработка клика по кнопке запуска
         document.querySelector('.launch-button').addEventListener('click', function(e) {
-            console.log('🚀 Launching Codespace...');
+            console.log('🚀 Запуск ЗАДАЧНИК...');
             // Кнопка откроет Codespaces в новой вкладке
         });
     </script>

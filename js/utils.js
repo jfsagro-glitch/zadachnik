@@ -1,5 +1,5 @@
 /**
- * Утилиты для приложения
+ * Утилиты для ЗАДАЧНИК
  */
 
 class Utils {
@@ -82,11 +82,11 @@ class Utils {
     // Работа с темами
     static setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('cursor_pipeline_theme', theme);
+        localStorage.setItem('zadachnik_theme', theme);
     }
     
     static getTheme() {
-        return localStorage.getItem('cursor_pipeline_theme') || 'light';
+        return localStorage.getItem('zadachnik_theme') || 'light';
     }
     
     static initTheme() {

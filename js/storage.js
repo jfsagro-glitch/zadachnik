@@ -1,15 +1,15 @@
 /**
- * Система хранения данных в localStorage
+ * Система хранения данных в localStorage для ЗАДАЧНИК
  * Заменяет серверную базу данных для статического сайта
  */
 
 class Storage {
     constructor() {
         this.keys = {
-            TASKS: 'cursor_pipeline_tasks',
-            USERS: 'cursor_pipeline_users',
-            SETTINGS: 'cursor_pipeline_settings',
-            SESSION: 'cursor_pipeline_session'
+            TASKS: 'zadachnik_tasks',
+            USERS: 'zadachnik_users',
+            SETTINGS: 'zadachnik_settings',
+            SESSION: 'zadachnik_session'
         };
         
         this.init();
@@ -245,7 +245,7 @@ class Storage {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `cursor-pipeline-backup-${Date.now()}.json`;
+        a.download = `zadachnik-backup-${Date.now()}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
