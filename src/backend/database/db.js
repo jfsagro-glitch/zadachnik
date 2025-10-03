@@ -93,5 +93,33 @@ process.on('SIGINT', () => {
     });
 });
 
+// Промисифицированные методы для удобной работы
+db.run = function(sql, params = []) {
+    return new Promise((resolve, reject) => {
+        this.constructor.prototype.run.call(this, sql, params, function(err) {
+            if (err) reject(err);
+            else resolve(this);
+        });
+    });
+};
+
+db.get = function(sql, params = []) {
+    return new Promise((resolve, reject) => {
+        this.constructor.prototype.get.call(this, sql, params, (err, row) => {
+            if (err) reject(err);
+            else resolve(row);
+        });
+    });
+};
+
+db.all = function(sql, params = []) {
+    return new Promise((resolve, reject) => {
+        this.constructor.prototype.all.call(this, sql, params, (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
+        });
+    });
+};
+
 module.exports = db;
 
