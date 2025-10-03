@@ -22,11 +22,18 @@ app.use(express.static('public'));
 
 // API Routes с обработкой ошибок
 try {
-  app.use('/api/demo', require('./src/backend/routes/demo'));
-  app.use('/api/tasks', require('./src/backend/routes/tasks'));
-  app.use('/api/users', require('./src/backend/routes/users'));
+  const demoRoutes = require('./src/backend/routes/demo');
+  const taskRoutes = require('./src/backend/routes/tasks');
+  const userRoutes = require('./src/backend/routes/users');
+  
+  app.use('/api/demo', demoRoutes);
+  app.use('/api/tasks', taskRoutes);
+  app.use('/api/users', userRoutes);
+  
+  console.log('✅ API маршруты загружены успешно');
 } catch (error) {
-  console.error('Ошибка загрузки маршрутов:', error);
+  console.error('❌ Ошибка загрузки маршрутов:', error.message);
+  console.log('⚠️  Сервер запустится без API маршрутов');
 }
 
 // Health check
@@ -53,18 +60,31 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 CURSOR Pipeline Demo running on port ${PORT}`);
-  console.log(`📊 Demo available at:`);
-  console.log(`   - Local: http://localhost:${PORT}`);
-  console.log(`   - GitHub Codespaces: https://${process.env.CODESPACE_NAME ? process.env.CODESPACE_NAME + '-3000.app.github.dev' : 'localhost:' + PORT}`);
-  console.log(`⏰ Session timeout: 6 hours`);
-  console.log(`👥 Max concurrent sessions: 10`);
-  console.log(`💾 Database: SQLite (demo_sessions.db)`);
+  console.log('\n' + '='.repeat(60));
+  console.log('🚀 CURSOR Pipeline Demo запущен успешно!');
+  console.log('='.repeat(60));
+  console.log(`📊 Приложение доступно по адресам:`);
+  console.log(`   - Локально: http://localhost:${PORT}`);
   
   // Информация о Codespaces
   if (process.env.CODESPACE_NAME) {
-    console.log(`\n🎉 GitHub Codespaces detected!`);
-    console.log(`📱 Open the app: https://${process.env.CODESPACE_NAME}-3000.app.github.dev`);
+    const codespaceUrl = `https://${process.env.CODESPACE_NAME}-3000.app.github.dev`;
+    console.log(`   - GitHub Codespaces: ${codespaceUrl}`);
+    console.log(`\n🎉 GitHub Codespaces обнаружен!`);
+    console.log(`📱 Откройте приложение: ${codespaceUrl}`);
+  } else {
+    console.log(`   - Внешний доступ: http://0.0.0.0:${PORT}`);
   }
+  
+  console.log(`\n⚙️  Настройки системы:`);
+  console.log(`   - Порт: ${PORT}`);
+  console.log(`   - Таймаут сессий: 6 часов`);
+  console.log(`   - Макс. сессий: 10`);
+  console.log(`   - База данных: SQLite (demo_sessions.db)`);
+  console.log(`   - Режим: ${process.env.NODE_ENV || 'production'}`);
+  
+  console.log('\n' + '='.repeat(60));
+  console.log('✅ Готов к работе! Добро пожаловать в CURSOR Pipeline!');
+  console.log('='.repeat(60) + '\n');
 });
 

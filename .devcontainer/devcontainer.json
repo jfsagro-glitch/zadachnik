@@ -30,7 +30,7 @@
       "onAutoForward": "silent"
     }
   },
-  "postCreateCommand": "npm install && npm run start:dev",
+  "postCreateCommand": "npm install && echo '✅ Dependencies installed' && echo '🔍 Running quick test...' && npm run quick-test && echo '🚀 Starting server...' && npm start",
   "remoteUser": "node",
   "workspaceFolder": "/workspaces/zadachnik"
 }

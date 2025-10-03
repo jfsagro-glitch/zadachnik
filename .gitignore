@@ -49,5 +49,12 @@ Thumbs.db
 tmp/
 temp/
 
-# Glitch specific
-.glitch-assets
+# GitHub specific
+.github/workflows/deploy.yml.bak
+
+# Codespaces specific
+.devcontainer/logs/
+
+# Build outputs
+dist/
+build/
