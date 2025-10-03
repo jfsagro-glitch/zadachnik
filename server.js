@@ -3,27 +3,40 @@ const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
-const bodyParser = require('body-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(helmet({
-  contentSecurityPolicy: false // Для демо-режима отключаем CSP
+  contentSecurityPolicy: false, // Для демо-режима отключаем CSP
+  crossOriginEmbedderPolicy: false
 }));
 app.use(compression());
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Статические файлы
 app.use(express.static('public'));
 
-// API Routes
-app.use('/api/demo', require('./src/backend/routes/demo'));
-app.use('/api/tasks', require('./src/backend/routes/tasks'));
-app.use('/api/users', require('./src/backend/routes/users'));
+// API Routes с обработкой ошибок
+try {
+  app.use('/api/demo', require('./src/backend/routes/demo'));
+  app.use('/api/tasks', require('./src/backend/routes/tasks'));
+  app.use('/api/users', require('./src/backend/routes/users'));
+} catch (error) {
+  console.error('Ошибка загрузки маршрутов:', error);
+}
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
 
 // SPA fallback - все остальные маршруты ведут на index.html
 app.get('*', (req, res) => {
@@ -33,7 +46,10 @@ app.get('*', (req, res) => {
 // Обработка ошибок
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).json({ error: 'Internal Server Error' });
+  res.status(500).json({ 
+    error: 'Internal Server Error',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
 });
 
 app.listen(PORT, () => {
