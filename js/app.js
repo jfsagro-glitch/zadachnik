@@ -260,10 +260,6 @@ class ZadachnikApp {
         const priorityClass = Utils.getPriorityClass(task.priority);
         const deadlineText = Utils.formatDate(task.deadline);
         
-        const tags = task.tags ? task.tags.map(tag => 
-            `<span class="task-tag">${tag}</span>`
-        ).join('') : '';
-        
         return `
             <div class="task" data-task-id="${task.id}" draggable="true">
                 <div class="task-header">
@@ -277,7 +273,6 @@ class ZadachnikApp {
                     <span class="task-assignee">👤 ${task.assignee || 'Не назначено'}</span>
                     <span class="task-deadline ${deadlineClass}">${deadlineText}</span>
                 </div>
-                ${tags ? `<div class="task-tags">${tags}</div>` : ''}
             </div>
         `;
     }
@@ -754,7 +749,6 @@ class ZadachnikApp {
         document.getElementById('task-priority').value = task.priority || 'medium';
         document.getElementById('task-assignee').value = task.assignee || '';
         document.getElementById('task-deadline').value = task.deadline || '';
-        document.getElementById('task-tags').value = task.tags ? task.tags.join(', ') : '';
     }
     
     fillUserForm(user) {
@@ -775,8 +769,6 @@ class ZadachnikApp {
             priority: formData.get('task-priority') || document.getElementById('task-priority').value,
             assignee: formData.get('task-assignee') || document.getElementById('task-assignee').value,
             deadline: formData.get('task-deadline') || document.getElementById('task-deadline').value,
-            tags: (formData.get('task-tags') || document.getElementById('task-tags').value)
-                .split(',').map(tag => tag.trim()).filter(tag => tag)
         };
         
         // Валидация
