@@ -758,25 +758,34 @@ body {
     }
     
     /* Мобильная адаптация информативного вида */
-    .tasks-grid {
-        grid-template-columns: 1fr;
-        gap: 4px;
+    .info-table-container {
+        overflow-x: auto;
+        max-height: 60vh;
     }
     
-    .info-task {
-        padding: 8px;
+    .info-table {
+        min-width: 600px;
     }
     
-    .info-task-title {
-        font-size: 0.9em;
+    .info-col-id-status {
+        width: 80px;
     }
     
-    .info-task-description {
-        font-size: 0.8em;
+    .info-col-title-desc {
+        min-width: 200px;
+        max-width: 250px;
     }
     
-    .info-task-meta {
-        font-size: 0.7em;
+    .info-col-assignee-deadline {
+        width: 150px;
+    }
+    
+    .info-col-tags {
+        width: 100px;
+    }
+    
+    .info-col-priority {
+        width: 50px;
     }
     
     .info-header {
@@ -1224,111 +1233,151 @@ body.compact-mode .setting-item {
     font-weight: 600;
 }
 
-.tasks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 6px;
-}
-
-.info-task {
+.info-table-container {
     background: var(--bg-primary);
-    border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8em;
+}
+
+.info-table th,
+.info-table td {
     padding: 6px 8px;
-    transition: var(--transition);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: top;
+}
+
+.info-table th {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+    color: var(--text-primary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    font-size: 0.7em;
+}
+
+.info-table tr {
     cursor: pointer;
-    position: relative;
+    transition: var(--transition);
 }
 
-.info-task:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-1px);
+.info-table tr:hover {
+    background: var(--bg-secondary);
 }
 
-.info-task-header {
+.info-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Колонки */
+.info-col-id-status {
+    width: 120px;
+}
+
+.info-col-title-desc {
+    min-width: 300px;
+    max-width: 400px;
+}
+
+.info-col-assignee-deadline {
+    width: 200px;
+}
+
+.info-col-tags {
+    width: 150px;
+}
+
+.info-col-priority {
+    width: 80px;
+    text-align: center;
+}
+
+/* Содержимое ячеек */
+.info-id-status {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 4px;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.info-task-id {
+.info-id {
     font-size: 0.7em;
     color: var(--primary-color);
     font-weight: 600;
     background: var(--bg-secondary);
     padding: 1px 4px;
     border-radius: 3px;
+    display: inline-block;
+    width: fit-content;
 }
 
-.info-task-status {
+.info-status {
     font-size: 0.6em;
     padding: 1px 4px;
     border-radius: 3px;
     font-weight: 600;
     text-transform: uppercase;
+    display: inline-block;
+    width: fit-content;
 }
 
-.info-task-title {
-    font-size: 0.8em;
+.info-title-desc {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.info-title {
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 3px;
     line-height: 1.2;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.info-task-description {
-    font-size: 0.7em;
+.info-description {
     color: var(--text-secondary);
-    margin-bottom: 4px;
     line-height: 1.2;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 0.9em;
 }
 
-.info-task-meta {
+.info-assignee-deadline {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.6em;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.info-task-assignee {
+.info-assignee {
     color: var(--text-secondary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 60%;
+    font-size: 0.9em;
 }
 
-.info-task-deadline {
+.info-deadline {
     font-weight: 600;
     padding: 1px 3px;
     border-radius: 2px;
-    font-size: 0.6em;
+    font-size: 0.8em;
+    display: inline-block;
+    width: fit-content;
 }
 
-.info-task-priority {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    border: 1px solid var(--bg-primary);
-}
-
-.priority-indicator-low { background: #2e7d32; }
-.priority-indicator-medium { background: #f57c00; }
-.priority-indicator-high { background: #d32f2f; }
-.priority-indicator-critical { background: #c2185b; }
-
-.info-task-tags {
-    margin-top: 3px;
+.info-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 1px;
@@ -1339,9 +1388,27 @@ body.compact-mode .setting-item {
     color: var(--text-secondary);
     padding: 1px 3px;
     border-radius: 2px;
-    font-size: 0.5em;
+    font-size: 0.6em;
     line-height: 1;
 }
+
+.info-priority {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.priority-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid var(--bg-primary);
+}
+
+.priority-indicator-low { background: #2e7d32; }
+.priority-indicator-medium { background: #f57c00; }
+.priority-indicator-high { background: #d32f2f; }
+.priority-indicator-critical { background: #c2185b; }
 
 /* Компактный табличный вид */
 body.compact-mode .tasks-table th,
@@ -1365,25 +1432,56 @@ body.compact-mode .list-item .task-meta {
 }
 
 /* Компактный информативный вид */
-body.compact-mode .tasks-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 4px;
-}
-
-body.compact-mode .info-task {
+body.compact-mode .info-table th,
+body.compact-mode .info-table td {
     padding: 4px 6px;
-}
-
-body.compact-mode .info-task-title {
     font-size: 0.7em;
 }
 
-body.compact-mode .info-task-description {
-    font-size: 0.6em;
+body.compact-mode .info-col-id-status {
+    width: 100px;
 }
 
-body.compact-mode .info-task-meta {
+body.compact-mode .info-col-title-desc {
+    min-width: 250px;
+    max-width: 350px;
+}
+
+body.compact-mode .info-col-assignee-deadline {
+    width: 180px;
+}
+
+body.compact-mode .info-col-tags {
+    width: 120px;
+}
+
+body.compact-mode .info-col-priority {
+    width: 60px;
+}
+
+body.compact-mode .info-title {
+    font-size: 0.8em;
+}
+
+body.compact-mode .info-description {
+    font-size: 0.7em;
+}
+
+body.compact-mode .info-assignee {
+    font-size: 0.8em;
+}
+
+body.compact-mode .info-deadline {
+    font-size: 0.7em;
+}
+
+body.compact-mode .info-tag {
     font-size: 0.5em;
+}
+
+body.compact-mode .priority-indicator {
+    width: 10px;
+    height: 10px;
 }
 
 body.compact-mode .info-header {

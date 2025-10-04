@@ -507,14 +507,14 @@ class ZadachnikApp {
     }
     
     renderInfoView(tasks, users) {
-        const gridContainer = document.getElementById('tasks-grid');
+        const tableBody = document.getElementById('info-table-body');
         const totalElement = document.getElementById('info-total');
         const activeElement = document.getElementById('info-active');
         const doneElement = document.getElementById('info-done');
         
-        if (!gridContainer) return;
+        if (!tableBody) return;
         
-        gridContainer.innerHTML = '';
+        tableBody.innerHTML = '';
         
         // Подсчет статистики
         const total = tasks.length;
@@ -526,49 +526,63 @@ class ZadachnikApp {
         if (activeElement) activeElement.textContent = active;
         if (doneElement) doneElement.textContent = done;
         
-        // Рендеринг задач в сетке
+        // Рендеринг задач в таблице
         tasks.forEach(task => {
             const user = users.find(u => u.id === task.assigneeId);
-            const item = document.createElement('div');
-            item.className = 'info-task';
-            item.dataset.taskId = task.id;
+            const row = document.createElement('tr');
+            row.dataset.taskId = task.id;
             
             // Обрезка текста для компактности
-            const title = task.title.length > 25 ? task.title.substring(0, 25) + '...' : task.title;
-            const description = task.description.length > 35 ? task.description.substring(0, 35) + '...' : task.description;
-            const assigneeName = user ? (user.name.length > 12 ? user.name.substring(0, 12) + '...' : user.name) : 'Не назначен';
+            const title = task.title.length > 40 ? task.title.substring(0, 40) + '...' : task.title;
+            const description = task.description.length > 50 ? task.description.substring(0, 50) + '...' : task.description;
+            const assigneeName = user ? (user.name.length > 15 ? user.name.substring(0, 15) + '...' : user.name) : 'Не назначен';
             
-            item.innerHTML = `
-                <div class="info-task-header">
-                    <span class="info-task-id">#${task.id}</span>
-                    <span class="info-task-status status-${task.status}">${this.getStatusText(task.status)}</span>
-                </div>
-                <div class="info-task-title" title="${task.title}">${title}</div>
-                <div class="info-task-description" title="${task.description}">${description}</div>
-                <div class="info-task-meta">
-                    <span class="info-task-assignee" title="${user ? user.name : 'Не назначен'}">👤 ${assigneeName}</span>
-                    <span class="info-task-deadline ${this.getDeadlineClass(task.deadline)}" title="${Utils.formatDate(task.deadline)}">${Utils.formatDate(task.deadline)}</span>
-                </div>
-                ${task.tags && task.tags.length > 0 ? `
-                    <div class="info-task-tags">
-                        ${task.tags.slice(0, 3).map(tag => `<span class="info-tag">${tag}</span>`).join('')}
-                        ${task.tags.length > 3 ? `<span class="info-tag">+${task.tags.length - 3}</span>` : ''}
+            row.innerHTML = `
+                <td class="info-col-id-status">
+                    <div class="info-id-status">
+                        <span class="info-id">#${task.id}</span>
+                        <span class="info-status status-${task.status}">${this.getStatusText(task.status)}</span>
                     </div>
-                ` : ''}
-                <div class="info-task-priority priority-indicator-${task.priority}" title="${this.getPriorityText(task.priority)}"></div>
+                </td>
+                <td class="info-col-title-desc">
+                    <div class="info-title-desc">
+                        <div class="info-title" title="${task.title}">${title}</div>
+                        <div class="info-description" title="${task.description}">${description}</div>
+                    </div>
+                </td>
+                <td class="info-col-assignee-deadline">
+                    <div class="info-assignee-deadline">
+                        <div class="info-assignee" title="${user ? user.name : 'Не назначен'}">👤 ${assigneeName}</div>
+                        <div class="info-deadline ${this.getDeadlineClass(task.deadline)}" title="${Utils.formatDate(task.deadline)}">📅 ${Utils.formatDate(task.deadline)}</div>
+                    </div>
+                </td>
+                <td class="info-col-tags">
+                    <div class="info-tags">
+                        ${task.tags && task.tags.length > 0 ? 
+                            task.tags.slice(0, 3).map(tag => `<span class="info-tag">${tag}</span>`).join('') +
+                            (task.tags.length > 3 ? `<span class="info-tag">+${task.tags.length - 3}</span>` : '')
+                            : '<span class="info-tag" style="opacity: 0.5;">—</span>'
+                        }
+                    </div>
+                </td>
+                <td class="info-col-priority">
+                    <div class="info-priority">
+                        <div class="priority-indicator priority-indicator-${task.priority}" title="${this.getPriorityText(task.priority)}"></div>
+                    </div>
+                </td>
             `;
             
             // Добавляем обработчики событий
-            item.addEventListener('click', () => {
+            row.addEventListener('click', () => {
                 this.editTask(task.id);
             });
             
-            item.addEventListener('contextmenu', (e) => {
+            row.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
                 this.showTaskContextMenu(e, task.id);
             });
             
-            gridContainer.appendChild(item);
+            tableBody.appendChild(row);
         });
     }
     

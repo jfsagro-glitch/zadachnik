@@ -159,8 +159,21 @@
                         <span class="stat-item">Завершено: <strong id="info-done">0</strong></span>
                     </div>
                 </div>
-                <div class="tasks-grid" id="tasks-grid">
-                    <!-- Задачи будут добавлены через JavaScript -->
+                <div class="info-table-container">
+                    <table class="info-table" id="info-table">
+                        <thead>
+                            <tr>
+                                <th class="info-col-id-status">ID / Статус</th>
+                                <th class="info-col-title-desc">Название / Описание</th>
+                                <th class="info-col-assignee-deadline">Исполнитель / Срок</th>
+                                <th class="info-col-tags">Теги</th>
+                                <th class="info-col-priority">Приоритет</th>
+                            </tr>
+                        </thead>
+                        <tbody id="info-table-body">
+                            <!-- Задачи будут добавлены через JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
