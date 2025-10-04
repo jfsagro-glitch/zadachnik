@@ -96,7 +96,6 @@ const DemoData = {
             priority: 'high',
             assignee: 'Михаил Петров',
             deadline: getDateString(7),
-            tags: ['разработка', 'API', 'backend', 'аутентификация'],
             status: 'in-progress',
             createdAt: Date.now() - 86400000 * 5,
             updatedAt: Date.now() - 86400000 * 1
@@ -108,7 +107,6 @@ const DemoData = {
             priority: 'medium',
             assignee: 'Елена Сидорова',
             deadline: getDateString(5),
-            tags: ['дизайн', 'frontend', 'UI', 'UX'],
             status: 'new',
             createdAt: Date.now() - 86400000 * 3,
             updatedAt: Date.now() - 86400000 * 3
@@ -120,7 +118,6 @@ const DemoData = {
             priority: 'high',
             assignee: 'Анна Иванова',
             deadline: getDateString(10),
-            tags: ['DevOps', 'CI/CD', 'автоматизация', 'Docker'],
             status: 'new',
             createdAt: Date.now() - 86400000 * 7,
             updatedAt: Date.now() - 86400000 * 7
@@ -132,7 +129,6 @@ const DemoData = {
             priority: 'medium',
             assignee: 'Ольга Новикова',
             deadline: getDateString(14),
-            tags: ['HR', 'рекрутинг', 'собеседования', 'разработчики'],
             status: 'in-progress',
             createdAt: Date.now() - 86400000 * 10,
             updatedAt: Date.now() - 86400000 * 2
@@ -144,7 +140,6 @@ const DemoData = {
             priority: 'medium',
             assignee: 'Сергей Волков',
             deadline: getDateString(3),
-            tags: ['маркетинг', 'SMM', 'реклама', 'социальные сети'],
             status: 'review',
             createdAt: Date.now() - 86400000 * 8,
             updatedAt: Date.now() - 86400000 * 1
@@ -156,7 +151,6 @@ const DemoData = {
             priority: 'high',
             assignee: 'Елена Сидорова',
             deadline: getDateString(-2),
-            tags: ['тестирование', 'QA', 'мобильное приложение', 'кроссплатформенность'],
             status: 'done',
             createdAt: Date.now() - 86400000 * 15,
             updatedAt: Date.now() - 86400000 * 2
@@ -168,7 +162,6 @@ const DemoData = {
             priority: 'critical',
             assignee: 'Михаил Петров',
             deadline: getDateString(1),
-            tags: ['база данных', 'миграция', 'оптимизация', 'резервное копирование'],
             status: 'in-progress',
             createdAt: Date.now() - 86400000 * 12,
             updatedAt: Date.now() - 86400000 * 0
@@ -180,7 +173,6 @@ const DemoData = {
             priority: 'medium',
             assignee: 'Анна Иванова',
             deadline: getDateString(8),
-            tags: ['документация', 'API', 'разработка', 'примеры'],
             status: 'new',
             createdAt: Date.now() - 86400000 * 6,
             updatedAt: Date.now() - 86400000 * 6
@@ -192,7 +184,6 @@ const DemoData = {
             priority: 'low',
             assignee: 'Александр Соколов',
             deadline: getDateString(20),
-            tags: ['анализ', 'исследования', 'конкуренты', 'отчет'],
             status: 'new',
             createdAt: Date.now() - 86400000 * 4,
             updatedAt: Date.now() - 86400000 * 4
@@ -204,7 +195,6 @@ const DemoData = {
             priority: 'high',
             assignee: 'Михаил Петров',
             deadline: getDateString(12),
-            tags: ['интеграция', 'платежи', 'безопасность', 'тестирование'],
             status: 'new',
             createdAt: Date.now() - 86400000 * 9,
             updatedAt: Date.now() - 86400000 * 9
@@ -216,7 +206,6 @@ const DemoData = {
             priority: 'medium',
             assignee: 'Елена Сидорова',
             deadline: getDateString(15),
-            tags: ['оптимизация', 'производительность', 'UX', 'скорость'],
             status: 'new',
             createdAt: Date.now() - 86400000 * 11,
             updatedAt: Date.now() - 86400000 * 11
@@ -228,7 +217,6 @@ const DemoData = {
             priority: 'low',
             assignee: 'Татьяна Морозова',
             deadline: getDateString(25),
-            tags: ['обучение', 'документация', 'видео', 'туториалы'],
             status: 'new',
             createdAt: Date.now() - 86400000 * 13,
             updatedAt: Date.now() - 86400000 * 13
@@ -240,7 +228,6 @@ const DemoData = {
             priority: 'medium',
             assignee: 'Дмитрий Козлов',
             deadline: getDateString(6),
-            tags: ['мониторинг', 'алерты', 'DevOps', 'наблюдаемость'],
             status: 'in-progress',
             createdAt: Date.now() - 86400000 * 14,
             updatedAt: Date.now() - 86400000 * 1
@@ -252,7 +239,6 @@ const DemoData = {
             priority: 'low',
             assignee: 'Татьяна Морозова',
             deadline: getDateString(18),
-            tags: ['email', 'рассылки', 'автоматизация', 'маркетинг'],
             status: 'new',
             createdAt: Date.now() - 86400000 * 16,
             updatedAt: Date.now() - 86400000 * 16
@@ -264,7 +250,6 @@ const DemoData = {
             priority: 'critical',
             assignee: 'Михаил Петров',
             deadline: getDateString(4),
-            tags: ['безопасность', 'тестирование', 'уязвимости', 'защита'],
             status: 'review',
             createdAt: Date.now() - 86400000 * 17,
             updatedAt: Date.now() - 86400000 * 1
