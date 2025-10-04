@@ -1015,7 +1015,7 @@ body.compact-mode .setting-item {
 }
 
 .tasks-table .task-status {
-    width: 100px;
+    width: 130px;
 }
 
 .tasks-table .task-priority {
@@ -1049,7 +1049,10 @@ body.compact-mode .setting-item {
 }
 
 .status-new { background: #e3f2fd; color: #1976d2; }
+.status-assigned { background: #e8f5e9; color: #2e7d32; }
 .status-in-progress { background: #fff3e0; color: #f57c00; }
+.status-paused { background: #e0f7fa; color: #00796b; }
+.status-rework { background: #fff8e1; color: #f57c00; }
 .status-review { background: #f3e5f5; color: #7b1fa2; }
 .status-done { background: #e8f5e8; color: #2e7d32; }
 
@@ -1280,22 +1283,17 @@ body.compact-mode .setting-item {
 }
 
 /* Колонки */
-.info-col-id-status {
-    width: 120px;
-}
+.info-col-id { width: 80px; }
 
 .info-col-title-desc {
     min-width: 300px;
     max-width: 400px;
 }
 
-.info-col-assignee-deadline {
-    width: 200px;
-}
+.info-col-assignee { width: 160px; }
+.info-col-deadline { width: 120px; }
 
-.info-col-tags {
-    width: 150px;
-}
+.info-col-status { width: 140px; }
 
 .info-col-priority {
     width: 80px;

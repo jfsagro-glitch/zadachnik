@@ -380,20 +380,15 @@ class ZadachnikApp {
                 <td class="task-id">#${task.id}</td>
                 <td class="task-title">${task.title}</td>
                 <td class="task-description" title="${task.description}">${task.description}</td>
-                <td class="task-status">
-                    <span class="status-badge status-${task.status}">${this.getStatusText(task.status)}</span>
-                </td>
-                <td class="task-priority">
-                    <span class="priority-badge priority-${task.priority}">${this.getPriorityText(task.priority)}</span>
-                </td>
                 <td class="task-assignee">${user ? user.name : 'Не назначен'}</td>
                 <td class="task-deadline">
                     <span class="deadline-badge ${this.getDeadlineClass(task.deadline)}">${Utils.formatDate(task.deadline)}</span>
                 </td>
-                <td class="task-tags">
-                    <div class="tags-cell">
-                        ${task.tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('')}
-                    </div>
+                <td class="task-priority">
+                    <span class="priority-badge priority-${task.priority}">${this.getPriorityText(task.priority)}</span>
+                </td>
+                <td class="task-status">
+                    <span class="status-badge status-${task.status}">${this.getStatusText(task.status)}</span>
                 </td>
                 <td class="task-actions">
                     <div class="action-buttons">
@@ -422,18 +417,15 @@ class ZadachnikApp {
                     <div class="task-title">${task.title}</div>
                     <div class="task-description">${task.description}</div>
                     <div class="task-meta">
-                        <div class="task-status">
-                            <span class="status-badge status-${task.status}">${this.getStatusText(task.status)}</span>
-                        </div>
-                        <div class="task-priority">
-                            <span class="priority-badge priority-${task.priority}">${this.getPriorityText(task.priority)}</span>
-                        </div>
                         <div class="task-assignee">👤 ${user ? user.name : 'Не назначен'}</div>
                         <div class="task-deadline">
                             <span class="deadline-badge ${this.getDeadlineClass(task.deadline)}">📅 ${Utils.formatDate(task.deadline)}</span>
                         </div>
-                        <div class="task-tags">
-                            ${task.tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('')}
+                        <div class="task-priority">
+                            <span class="priority-badge priority-${task.priority}">${this.getPriorityText(task.priority)}</span>
+                        </div>
+                        <div class="task-status">
+                            <span class="status-badge status-${task.status}">${this.getStatusText(task.status)}</span>
                         </div>
                     </div>
                 </div>
@@ -448,8 +440,11 @@ class ZadachnikApp {
     
     getStatusText(status) {
         const statusMap = {
-            'new': 'Новая',
+            'new': 'На распределении',
+            'assigned': 'Распределено',
             'in-progress': 'В работе',
+            'paused': 'Приостановка',
+            'rework': 'На доработке',
             'review': 'На проверке',
             'done': 'Выполнено'
         };
@@ -482,10 +477,6 @@ class ZadachnikApp {
         const priorityClass = `priority-${task.priority}`;
         const deadlineText = Utils.formatDate(task.deadline);
         
-        const tags = task.tags ? task.tags.map(tag => 
-            `<span class="task-tag">${tag}</span>`
-        ).join('') : '';
-        
         const taskElement = document.createElement('div');
         taskElement.className = 'task';
         taskElement.dataset.taskId = task.id;
@@ -502,7 +493,6 @@ class ZadachnikApp {
                 <span class="task-assignee">👤 ${user ? user.name : 'Не назначено'}</span>
                 <span class="task-deadline ${deadlineClass}">${deadlineText}</span>
             </div>
-            ${tags ? `<div class="task-tags">${tags}</div>` : ''}
         `;
         
         // Добавляем обработчик двойного клика
@@ -544,12 +534,9 @@ class ZadachnikApp {
             const description = task.description.length > 50 ? task.description.substring(0, 50) + '...' : task.description;
             const assigneeName = user ? (user.name.length > 15 ? user.name.substring(0, 15) + '...' : user.name) : 'Не назначен';
             
-            row.innerHTML = `
-                <td class="info-col-id-status">
-                    <div class="info-id-status">
-                        <span class="info-id">#${task.id}</span>
-                        <span class="info-status status-${task.status}">${this.getStatusText(task.status)}</span>
-                    </div>
+                row.innerHTML = `
+                <td class="info-col-id">
+                    <span class="info-id">#${task.id}</span>
                 </td>
                 <td class="info-col-title-desc">
                     <div class="info-title-desc">
@@ -557,25 +544,19 @@ class ZadachnikApp {
                         <div class="info-description" title="${task.description}">${description}</div>
                     </div>
                 </td>
-                <td class="info-col-assignee-deadline">
-                    <div class="info-assignee-deadline">
-                        <div class="info-assignee" title="${user ? user.name : 'Не назначен'}">👤 ${assigneeName}</div>
-                        <div class="info-deadline ${this.getDeadlineClass(task.deadline)}" title="${Utils.formatDate(task.deadline)}">📅 ${Utils.formatDate(task.deadline)}</div>
-                    </div>
+                <td class="info-col-assignee">
+                    <div class="info-assignee" title="${user ? user.name : 'Не назначен'}">👤 ${assigneeName}</div>
                 </td>
-                <td class="info-col-tags">
-                    <div class="info-tags">
-                        ${task.tags && task.tags.length > 0 ? 
-                            task.tags.slice(0, 3).map(tag => `<span class="info-tag">${tag}</span>`).join('') +
-                            (task.tags.length > 3 ? `<span class="info-tag">+${task.tags.length - 3}</span>` : '')
-                            : '<span class="info-tag" style="opacity: 0.5;">—</span>'
-                        }
-                    </div>
+                <td class="info-col-deadline">
+                    <div class="info-deadline ${this.getDeadlineClass(task.deadline)}" title="${Utils.formatDate(task.deadline)}">📅 ${Utils.formatDate(task.deadline)}</div>
                 </td>
                 <td class="info-col-priority">
                     <div class="info-priority">
                         <div class="priority-indicator priority-indicator-${task.priority}" title="${this.getPriorityText(task.priority)}"></div>
                     </div>
+                </td>
+                <td class="info-col-status">
+                    <span class="status-badge status-${task.status}">${this.getStatusText(task.status)}</span>
                 </td>
             `;
             
