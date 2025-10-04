@@ -142,7 +142,10 @@ class ZadachnikApp {
             viewModeSelect.value = Utils.getViewMode();
             viewModeSelect.addEventListener('change', (e) => {
                 Utils.setViewMode(e.target.value);
-                this.renderTasks(); // Перерисовка задач в новом виде
+                // Небольшая задержка для корректного переключения
+                setTimeout(() => {
+                    this.renderTasks(); // Перерисовка задач в новом виде
+                }, 50);
                 Utils.showNotification('Вид изменен на: ' + e.target.options[e.target.selectedIndex].text, 'success');
             });
         }
@@ -338,8 +341,12 @@ class ZadachnikApp {
     
     updateAnalytics() {
         // Обновляем аналитику при смене задач
-        if (this.currentTab === 'analytics') {
-            this.renderAnalytics();
+        try {
+            if (this.currentTab === 'analytics') {
+                this.renderAnalytics();
+            }
+        } catch (error) {
+            console.warn('Ошибка обновления аналитики:', error);
         }
     }
     
@@ -618,45 +625,66 @@ class ZadachnikApp {
     }
     
     renderAnalytics() {
-        const stats = Utils.calculateTaskStats(this.tasks);
-        
-        // Обновляем метрики
-        document.getElementById('metric-completed').textContent = stats.done;
-        document.getElementById('metric-overdue').textContent = stats.overdue;
-        document.getElementById('metric-completion').textContent = `${stats.completionRate}%`;
-        document.getElementById('metric-active').textContent = this.users.filter(u => u.isActive).length;
-        
-        // Рендерим графики
-        this.renderCharts();
+        try {
+            const stats = Utils.calculateTaskStats(this.tasks);
+            
+            // Обновляем метрики
+            const completedEl = document.getElementById('metric-completed');
+            const overdueEl = document.getElementById('metric-overdue');
+            const completionEl = document.getElementById('metric-completion');
+            const activeEl = document.getElementById('metric-active');
+            
+            if (completedEl) completedEl.textContent = stats.done;
+            if (overdueEl) overdueEl.textContent = stats.overdue;
+            if (completionEl) completionEl.textContent = `${stats.completionRate}%`;
+            if (activeEl) activeEl.textContent = this.users.filter(u => u.isActive).length;
+            
+            // Рендерим графики
+            this.renderCharts();
+        } catch (error) {
+            console.warn('Ошибка рендеринга аналитики:', error);
+        }
     }
     
     renderCharts() {
-        const statusChart = document.getElementById('status-chart');
-        const teamChart = document.getElementById('team-chart');
-        
-        if (statusChart) {
-            this.renderStatusChart(statusChart);
-        }
-        
-        if (teamChart) {
-            this.renderTeamChart(teamChart);
+        try {
+            const statusChart = document.getElementById('status-chart');
+            const teamChart = document.getElementById('team-chart');
+            
+            if (statusChart) {
+                this.renderStatusChart(statusChart);
+            }
+            
+            if (teamChart) {
+                this.renderTeamChart(teamChart);
+            }
+        } catch (error) {
+            console.warn('Ошибка рендеринга графиков:', error);
         }
     }
     
     renderStatusChart(canvas) {
-        const data = charts.createTaskStatusData(this.tasks);
-        charts.drawPieChart(canvas, data, {
-            colors: ['#667eea', '#764ba2', '#f093fb', '#4caf50'],
-            showLegend: true,
-            showCenter: true
-        });
+        try {
+            const data = charts.createTaskStatusData(this.tasks);
+            charts.drawPieChart(canvas, data, {
+                colors: ['#667eea', '#764ba2', '#f093fb', '#4caf50'],
+                showLegend: true,
+                showCenter: true
+            });
+        } catch (error) {
+            console.warn('Ошибка рендеринга графика статусов:', error);
+        }
     }
     
     renderTeamChart(canvas) {
-        const data = charts.createUserWorkloadData(this.users, this.tasks);
-        charts.drawBarChart(canvas, data, {
-            colors: ['#667eea', '#764ba2', '#f093fb', '#4caf50', '#20b2aa', '#ff9800', '#f44336', '#2196f3']
-        });
+        try {
+            const data = charts.createUserWorkloadData(this.users, this.tasks);
+            charts.drawBarChart(canvas, data, {
+                colors: ['#667eea', '#764ba2', '#f093fb', '#4caf50', '#20b2aa', '#ff9800', '#f44336', '#2196f3']
+            });
+        } catch (error) {
+            console.warn('Ошибка рендеринга графика команды:', error);
+        }
     }
     
     renderTeam() {
@@ -969,6 +997,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.app = new ZadachnikApp();
     // Рендерим задачи после инициализации
     setTimeout(() => {
+        // Устанавливаем правильный вид отображения
+        Utils.updateViewMode(Utils.getViewMode());
         window.app.renderTasks();
     }, 100);
 });
