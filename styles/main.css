@@ -307,21 +307,6 @@ body {
 .deadline-warning { background: #fff3e0; color: #f57c00; }
 .deadline-danger { background: #ffebee; color: #d32f2f; }
 
-.task-tags {
-    margin-top: 6px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3px;
-}
-
-.task-tag {
-    background: var(--bg-tertiary);
-    color: var(--text-secondary);
-    padding: 1px 4px;
-    border-radius: 3px;
-    font-size: 0.6em;
-}
-
 /* Кнопки */
 .btn-primary {
     background: var(--primary-color);
@@ -893,10 +878,6 @@ body.compact-mode .task-description {
     margin-bottom: 4px;
 }
 
-body.compact-mode .task-tags {
-    margin-top: 4px;
-}
-
 body.compact-mode .metric-card {
     padding: 8px;
 }
@@ -1028,10 +1009,6 @@ body.compact-mode .setting-item {
 
 .tasks-table .task-deadline {
     width: 100px;
-}
-
-.tasks-table .task-tags {
-    width: 150px;
 }
 
 .tasks-table .task-actions {
@@ -1189,12 +1166,6 @@ body.compact-mode .setting-item {
     display: flex;
     align-items: center;
     gap: 4px;
-}
-
-.list-item .task-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
 }
 
 .list-item .task-actions {
