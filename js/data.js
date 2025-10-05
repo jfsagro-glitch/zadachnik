@@ -1,275 +1,253 @@
 /**
- * Демо-данные для ЗАДАЧНИК
+ * Демо-данные для ЗАДАЧНИК - Компактная табличная система
  */
 
 const DemoData = {
-    // Демо-пользователи
+    // Пользователи
     users: [
-        {
-            id: 'user_1',
-            name: 'Анна Иванова',
-            role: 'supervisor',
-            department: 'IT отдел',
-            email: 'anna.ivanova@company.com',
-            avatar: '👩‍💼',
-            createdAt: Date.now() - 86400000 * 30,
-            isActive: true
-        },
-        {
-            id: 'user_2',
-            name: 'Михаил Петров',
-            role: 'executor',
-            department: 'IT отдел',
-            email: 'mikhail.petrov@company.com',
-            avatar: '👨‍💻',
-            createdAt: Date.now() - 86400000 * 25,
-            isActive: true
-        },
-        {
-            id: 'user_3',
-            name: 'Елена Сидорова',
-            role: 'executor',
-            department: 'IT отдел',
-            email: 'elena.sidorova@company.com',
-            avatar: '👩‍💻',
-            createdAt: Date.now() - 86400000 * 20,
-            isActive: true
-        },
-        {
-            id: 'user_4',
-            name: 'Дмитрий Козлов',
-            role: 'manager',
-            department: 'IT отдел',
-            email: 'dmitry.kozlov@company.com',
-            avatar: '👨‍💼',
-            createdAt: Date.now() - 86400000 * 35,
-            isActive: true
-        },
-        {
-            id: 'user_5',
-            name: 'Ольга Новикова',
-            role: 'executor',
-            department: 'HR отдел',
-            email: 'olga.novikova@company.com',
-            avatar: '👩‍🎓',
-            createdAt: Date.now() - 86400000 * 15,
-            isActive: true
-        },
-        {
-            id: 'user_6',
-            name: 'Сергей Волков',
-            role: 'executor',
-            department: 'Маркетинг',
-            email: 'sergey.volkov@company.com',
-            avatar: '👨‍🎨',
-            createdAt: Date.now() - 86400000 * 10,
-            isActive: true
-        },
-        {
-            id: 'user_7',
-            name: 'Татьяна Морозова',
-            role: 'executor',
-            department: 'Маркетинг',
-            email: 'tatyana.morozova@company.com',
-            avatar: '👩‍🎨',
-            createdAt: Date.now() - 86400000 * 8,
-            isActive: true
-        },
-        {
-            id: 'user_8',
-            name: 'Александр Соколов',
-            role: 'business',
-            department: 'Маркетинг',
-            email: 'alexander.sokolov@company.com',
-            avatar: '👨‍💼',
-            createdAt: Date.now() - 86400000 * 12,
-            isActive: true
-        }
+        { id: 'U1', name: 'Иван Петров', role: 'executor', available: false },
+        { id: 'U2', name: 'Елена Коваль', role: 'executor', available: true },
+        { id: 'U3', name: 'Анна Смирнова', role: 'executor', available: false },
+        { id: 'U4', name: 'Дмитрий Волков', role: 'executor', available: true },
+        { id: 'U5', name: 'Мария Новикова', role: 'executor', available: false },
+        { id: 'U6', name: 'Сергей Морозов', role: 'executor', available: true },
+        { id: 'U7', name: 'Ольга Соколова', role: 'executor', available: false },
+        { id: 'U8', name: 'Алексей Кузнецов', role: 'executor', available: true },
+        { id: 'U9', name: 'Татьяна Лебедева', role: 'executor', available: false },
+        { id: 'U10', name: 'Павел Орлов', role: 'executor', available: true }
     ],
     
-    // Демо-задачи
+    // Задачи (20+)
     tasks: [
         {
-            id: 'task_1',
-            title: 'Разработка нового API',
-            description: 'Создать REST API для мобильного приложения с поддержкой аутентификации и авторизации пользователей. API должен поддерживать CRUD операции для основных сущностей системы.',
-            priority: 'high',
-            assignee: 'Михаил Петров',
-            deadline: getDateString(7),
+            id: 'T-001',
+            title: 'Разработка ТЗ проекта корпоративного портала',
             status: 'in-progress',
-            createdAt: Date.now() - 86400000 * 5,
-            updatedAt: Date.now() - 86400000 * 1
-        },
-        {
-            id: 'task_2',
-            title: 'Дизайн главной страницы',
-            description: 'Создать современный адаптивный дизайн главной страницы сайта с учетом UX/UI принципов и брендинга компании.',
-            priority: 'medium',
-            assignee: 'Елена Сидорова',
+            priority: 'high',
+            assignee: 'Иван Петров',
             deadline: getDateString(5),
-            status: 'new',
-            createdAt: Date.now() - 86400000 * 3,
-            updatedAt: Date.now() - 86400000 * 3
+            workload: 65
         },
         {
-            id: 'task_3',
-            title: 'Настройка CI/CD',
-            description: 'Настроить автоматическое развертывание и тестирование приложения с использованием GitHub Actions и Docker.',
-            priority: 'high',
-            assignee: 'Анна Иванова',
+            id: 'T-002',
+            title: 'Подбор фронтенд-разработчика React',
+            status: 'new',
+            priority: 'medium',
+            assignee: 'Елена Коваль',
             deadline: getDateString(10),
-            status: 'new',
-            createdAt: Date.now() - 86400000 * 7,
-            updatedAt: Date.now() - 86400000 * 7
+            workload: 40
         },
         {
-            id: 'task_4',
-            title: 'Рекрутинг разработчиков',
-            description: 'Поиск и проведение собеседований с кандидатами на позицию Frontend разработчика. Анализ резюме и техническое интервью.',
-            priority: 'medium',
-            assignee: 'Ольга Новикова',
-            deadline: getDateString(14),
-            status: 'in-progress',
-            createdAt: Date.now() - 86400000 * 10,
-            updatedAt: Date.now() - 86400000 * 2
-        },
-        {
-            id: 'task_5',
-            title: 'Маркетинговая кампания',
-            description: 'Запуск рекламной кампании в социальных сетях для продвижения нового продукта. Создание креативов и настройка таргетинга.',
-            priority: 'medium',
-            assignee: 'Сергей Волков',
-            deadline: getDateString(3),
-            status: 'review',
-            createdAt: Date.now() - 86400000 * 8,
-            updatedAt: Date.now() - 86400000 * 1
-        },
-        {
-            id: 'task_6',
-            title: 'Тестирование мобильного приложения',
-            description: 'Провести полное тестирование всех функций мобильного приложения на разных устройствах и операционных системах.',
-            priority: 'high',
-            assignee: 'Елена Сидорова',
-            deadline: getDateString(-2),
+            id: 'T-003',
+            title: 'Дизайн лендинга для нового продукта',
             status: 'done',
-            createdAt: Date.now() - 86400000 * 15,
-            updatedAt: Date.now() - 86400000 * 2
+            priority: 'low',
+            assignee: 'Анна Смирнова',
+            deadline: getDateString(-3),
+            workload: 100
         },
         {
-            id: 'task_7',
-            title: 'Обновление базы данных',
-            description: 'Миграция данных и оптимизация производительности базы данных. Создание резервных копий и тестирование.',
-            priority: 'critical',
-            assignee: 'Михаил Петров',
-            deadline: getDateString(1),
+            id: 'T-004',
+            title: 'Настройка CI/CD pipeline для микросервисов',
             status: 'in-progress',
-            createdAt: Date.now() - 86400000 * 12,
-            updatedAt: Date.now() - 86400000 * 0
-        },
-        {
-            id: 'task_8',
-            title: 'Создание документации API',
-            description: 'Написание подробной документации для разработчиков по использованию API. Примеры кода и схемы данных.',
-            priority: 'medium',
-            assignee: 'Анна Иванова',
-            deadline: getDateString(8),
-            status: 'new',
-            createdAt: Date.now() - 86400000 * 6,
-            updatedAt: Date.now() - 86400000 * 6
-        },
-        {
-            id: 'task_9',
-            title: 'Анализ конкурентов',
-            description: 'Исследование рынка и анализ продуктов конкурентов. Подготовка отчета с рекомендациями по улучшению продукта.',
-            priority: 'low',
-            assignee: 'Александр Соколов',
-            deadline: getDateString(20),
-            status: 'new',
-            createdAt: Date.now() - 86400000 * 4,
-            updatedAt: Date.now() - 86400000 * 4
-        },
-        {
-            id: 'task_10',
-            title: 'Интеграция с платежной системой',
-            description: 'Подключение и настройка обработки платежей через популярные платежные системы. Тестирование безопасности.',
-            priority: 'high',
-            assignee: 'Михаил Петров',
-            deadline: getDateString(12),
-            status: 'new',
-            createdAt: Date.now() - 86400000 * 9,
-            updatedAt: Date.now() - 86400000 * 9
-        },
-        {
-            id: 'task_11',
-            title: 'Оптимизация производительности',
-            description: 'Анализ и оптимизация производительности веб-приложения. Уменьшение времени загрузки и улучшение UX.',
-            priority: 'medium',
-            assignee: 'Елена Сидорова',
-            deadline: getDateString(15),
-            status: 'new',
-            createdAt: Date.now() - 86400000 * 11,
-            updatedAt: Date.now() - 86400000 * 11
-        },
-        {
-            id: 'task_12',
-            title: 'Создание обучающих материалов',
-            description: 'Разработка обучающих материалов для новых сотрудников. Видеоуроки и интерактивные туториалы.',
-            priority: 'low',
-            assignee: 'Татьяна Морозова',
-            deadline: getDateString(25),
-            status: 'new',
-            createdAt: Date.now() - 86400000 * 13,
-            updatedAt: Date.now() - 86400000 * 13
-        },
-        {
-            id: 'task_13',
-            title: 'Настройка мониторинга',
-            description: 'Внедрение системы мониторинга приложения и настройка алертов для критических событий.',
-            priority: 'medium',
-            assignee: 'Дмитрий Козлов',
-            deadline: getDateString(6),
-            status: 'in-progress',
-            createdAt: Date.now() - 86400000 * 14,
-            updatedAt: Date.now() - 86400000 * 1
-        },
-        {
-            id: 'task_14',
-            title: 'Создание email-рассылок',
-            description: 'Настройка автоматических email-рассылок для пользователей. Шаблоны и персонализация контента.',
-            priority: 'low',
-            assignee: 'Татьяна Морозова',
-            deadline: getDateString(18),
-            status: 'new',
-            createdAt: Date.now() - 86400000 * 16,
-            updatedAt: Date.now() - 86400000 * 16
-        },
-        {
-            id: 'task_15',
-            title: 'Тестирование безопасности',
-            description: 'Проведение тестирования безопасности приложения и исправление найденных уязвимостей.',
             priority: 'critical',
-            assignee: 'Михаил Петров',
-            deadline: getDateString(4),
+            assignee: 'Дмитрий Волков',
+            deadline: getDateString(2),
+            workload: 85
+        },
+        {
+            id: 'T-005',
+            title: 'Тестирование мобильного приложения iOS',
             status: 'review',
-            createdAt: Date.now() - 86400000 * 17,
-            updatedAt: Date.now() - 86400000 * 1
+            priority: 'high',
+            assignee: 'Мария Новикова',
+            deadline: getDateString(7),
+            workload: 70
+        },
+        {
+            id: 'T-006',
+            title: 'Оптимизация производительности базы данных',
+            status: 'in-progress',
+            priority: 'high',
+            assignee: 'Сергей Морозов',
+            deadline: getDateString(4),
+            workload: 75
+        },
+        {
+            id: 'T-007',
+            title: 'Создание документации API v2.0',
+            status: 'new',
+            priority: 'medium',
+            assignee: 'Ольга Соколова',
+            deadline: getDateString(15),
+            workload: 30
+        },
+        {
+            id: 'T-008',
+            title: 'Миграция данных на новый сервер',
+            status: 'paused',
+            priority: 'critical',
+            assignee: 'Алексей Кузнецов',
+            deadline: getDateString(1),
+            workload: 90
+        },
+        {
+            id: 'T-009',
+            title: 'Разработка модуля аналитики и отчетов',
+            status: 'in-progress',
+            priority: 'high',
+            assignee: 'Татьяна Лебедева',
+            deadline: getDateString(8),
+            workload: 60
+        },
+        {
+            id: 'T-010',
+            title: 'Интеграция с платежной системой Stripe',
+            status: 'new',
+            priority: 'high',
+            assignee: 'Павел Орлов',
+            deadline: getDateString(12),
+            workload: 55
+        },
+        {
+            id: 'T-011',
+            title: 'Рефакторинг legacy кода в модуле авторизации',
+            status: 'in-progress',
+            priority: 'medium',
+            assignee: 'Иван Петров',
+            deadline: getDateString(20),
+            workload: 45
+        },
+        {
+            id: 'T-012',
+            title: 'Проведение code review для команды',
+            status: 'review',
+            priority: 'low',
+            assignee: 'Елена Коваль',
+            deadline: getDateString(6),
+            workload: 25
+        },
+        {
+            id: 'T-013',
+            title: 'Настройка мониторинга и алертов Grafana',
+            status: 'new',
+            priority: 'medium',
+            assignee: 'Дмитрий Волков',
+            deadline: getDateString(14),
+            workload: 35
+        },
+        {
+            id: 'T-014',
+            title: 'Разработка email-рассылок для маркетинга',
+            status: 'done',
+            priority: 'low',
+            assignee: 'Анна Смирнова',
+            deadline: getDateString(-5),
+            workload: 100
+        },
+        {
+            id: 'T-015',
+            title: 'Тестирование безопасности веб-приложения',
+            status: 'in-progress',
+            priority: 'critical',
+            assignee: 'Мария Новикова',
+            deadline: getDateString(3),
+            workload: 80
+        },
+        {
+            id: 'T-016',
+            title: 'Создание прототипа нового интерфейса',
+            status: 'new',
+            priority: 'medium',
+            assignee: 'Сергей Морозов',
+            deadline: getDateString(18),
+            workload: 50
+        },
+        {
+            id: 'T-017',
+            title: 'Оптимизация SEO для корпоративного сайта',
+            status: 'review',
+            priority: 'low',
+            assignee: 'Ольга Соколова',
+            deadline: getDateString(9),
+            workload: 40
+        },
+        {
+            id: 'T-018',
+            title: 'Разработка мобильной версии админ-панели',
+            status: 'in-progress',
+            priority: 'high',
+            assignee: 'Алексей Кузнецов',
+            deadline: getDateString(11),
+            workload: 70
+        },
+        {
+            id: 'T-019',
+            title: 'Настройка резервного копирования данных',
+            status: 'new',
+            priority: 'critical',
+            assignee: 'Татьяна Лебедева',
+            deadline: getDateString(4),
+            workload: 60
+        },
+        {
+            id: 'T-020',
+            title: 'Проведение обучения новых сотрудников',
+            status: 'done',
+            priority: 'low',
+            assignee: 'Павел Орлов',
+            deadline: getDateString(-2),
+            workload: 100
+        },
+        {
+            id: 'T-021',
+            title: 'Разработка системы уведомлений push',
+            status: 'in-progress',
+            priority: 'medium',
+            assignee: 'Иван Петров',
+            deadline: getDateString(16),
+            workload: 55
+        },
+        {
+            id: 'T-022',
+            title: 'Анализ конкурентов и рынка',
+            status: 'new',
+            priority: 'low',
+            assignee: 'Елена Коваль',
+            deadline: getDateString(25),
+            workload: 20
+        },
+        {
+            id: 'T-023',
+            title: 'Интеграция с CRM системой Salesforce',
+            status: 'review',
+            priority: 'high',
+            assignee: 'Дмитрий Волков',
+            deadline: getDateString(7),
+            workload: 65
+        },
+        {
+            id: 'T-024',
+            title: 'Создание видео-инструкций для пользователей',
+            status: 'new',
+            priority: 'medium',
+            assignee: 'Анна Смирнова',
+            deadline: getDateString(22),
+            workload: 45
+        },
+        {
+            id: 'T-025',
+            title: 'Оптимизация скорости загрузки страниц',
+            status: 'in-progress',
+            priority: 'high',
+            assignee: 'Мария Новикова',
+            deadline: getDateString(6),
+            workload: 70
         }
-    ],
-    
-    // Настройки по умолчанию
-    settings: {
-        theme: 'light',
-        language: 'ru',
-        notifications: true,
-        autoSave: true,
-        defaultPriority: 'medium',
-        defaultDeadlineDays: 7,
-        showCompletedTasks: true,
-        compactView: false
-    }
+    ]
 };
 
-// Функция для получения даты
+// Вспомогательная функция для получения даты
 function getDateString(daysFromNow) {
     const date = new Date();
     date.setDate(date.getDate() + daysFromNow);
