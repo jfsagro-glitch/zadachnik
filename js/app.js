@@ -348,6 +348,12 @@ class ZadachnikApp {
         const task = this.tasks.find(t => t.id === taskId);
         if (!task) return;
         
+        // Для распределения открываем специальное модальное окно
+        if (actionId === 'assign') {
+            this.showAssignModal(task);
+            return;
+        }
+        
         const needsComment = ['pause', 'rework', 'return'].includes(actionId);
         
         if (needsComment) {
@@ -592,6 +598,137 @@ class ZadachnikApp {
     closeActionModal() {
         document.getElementById('action-modal').classList.remove('active');
         this.pendingAction = null;
+    }
+    
+    // Модальное окно распределения задачи
+    showAssignModal(task) {
+        this.currentTask = task;
+        
+        // Заполняем информацию о задаче
+        const taskInfo = document.getElementById('assign-task-info');
+        taskInfo.innerHTML = `
+            <h4>${task.id}: ${task.title}</h4>
+            <p><strong>Регион:</strong> ${task.region}</p>
+            <p><strong>Тип:</strong> ${task.type}</p>
+            <p><strong>Приоритет:</strong> ${this.getPriorityText(task.priority)}</p>
+            <p><strong>Срок:</strong> ${this.formatDate(task.dueDate)}</p>
+        `;
+        
+        // Очищаем поиск и комментарий
+        document.getElementById('employee-search').value = '';
+        document.getElementById('assign-comment').value = '';
+        
+        // Загружаем сотрудников региона
+        this.loadEmployeesForAssign(task.region);
+        
+        document.getElementById('assign-modal').classList.add('active');
+    }
+    
+    loadEmployeesForAssign(region) {
+        const employees = this.users.employee.filter(e => e.region === region);
+        
+        // Рассчитываем загрузку каждого сотрудника
+        const workloadByUser = {};
+        this.tasks.forEach(task => {
+            if (task.status !== 'approved' && task.assignedTo) {
+                task.assignedTo.forEach(empEmail => {
+                    if (!workloadByUser[empEmail]) {
+                        workloadByUser[empEmail] = 0;
+                    }
+                    // Условно: каждая активная задача = 20% загрузки
+                    workloadByUser[empEmail] += 20;
+                });
+            }
+        });
+        
+        this.allEmployees = employees.map(emp => ({
+            ...emp,
+            workload: Math.min(100, workloadByUser[emp.email] || 0),
+            available: (workloadByUser[emp.email] || 0) < 80
+        }));
+        
+        this.renderEmployeesGrid();
+    }
+    
+    renderEmployeesGrid() {
+        const grid = document.getElementById('employees-grid');
+        const searchText = document.getElementById('employee-search').value.toLowerCase();
+        
+        const filteredEmployees = this.allEmployees.filter(emp => 
+            emp.name.toLowerCase().includes(searchText) || 
+            emp.email.toLowerCase().includes(searchText)
+        );
+        
+        if (filteredEmployees.length === 0) {
+            grid.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Сотрудники не найдены</p>';
+            return;
+        }
+        
+        grid.innerHTML = filteredEmployees.map(emp => {
+            const workloadClass = emp.workload >= 80 ? 'high' : emp.workload >= 50 ? 'medium' : '';
+            const statusClass = emp.available ? 'available' : 'busy';
+            const statusText = emp.available ? 'Доступен' : 'Загружен';
+            
+            return `
+                <div class="employee-card" onclick="app.selectEmployee('${emp.email}')">
+                    <div class="employee-name">${emp.name}</div>
+                    <div class="employee-email">${emp.email}</div>
+                    <div class="employee-workload">
+                        <div class="employee-workload-bar">
+                            <div class="employee-workload-fill ${workloadClass}" style="width: ${emp.workload}%"></div>
+                        </div>
+                        <span class="employee-workload-text">${emp.workload}%</span>
+                    </div>
+                    <span class="employee-status ${statusClass}">${statusText}</span>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    filterEmployees() {
+        this.renderEmployeesGrid();
+    }
+    
+    selectEmployee(employeeEmail) {
+        if (!this.currentTask) return;
+        
+        const employee = this.allEmployees.find(e => e.email === employeeEmail);
+        if (!employee) return;
+        
+        const comment = document.getElementById('assign-comment').value.trim();
+        
+        if (confirm(`Распределить задачу "${this.currentTask.title}" на ${employee.name}?`)) {
+            try {
+                const updatedTask = this.workflow.assignTask(
+                    this.currentTask, 
+                    [employeeEmail], 
+                    comment || `Задача распределена на ${employee.name}`
+                );
+                
+                const index = this.tasks.findIndex(t => t.id === this.currentTask.id);
+                if (index !== -1) {
+                    this.tasks[index] = updatedTask;
+                    this.storage.saveTasks(this.tasks);
+                    this.applyFilters();
+                    this.closeAssignModal();
+                    
+                    // Если карточка задачи открыта, обновляем её
+                    if (document.getElementById('task-modal').classList.contains('active')) {
+                        this.openTaskCard(this.currentTask.id);
+                    }
+                    
+                    alert(`✅ Задача успешно распределена на ${employee.name}`);
+                }
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            }
+        }
+    }
+    
+    closeAssignModal() {
+        document.getElementById('assign-modal').classList.remove('active');
+        this.currentTask = null;
+        this.allEmployees = [];
     }
     
     exportToCSV() {
