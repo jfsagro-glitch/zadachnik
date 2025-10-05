@@ -1,258 +1,357 @@
 /**
- * Демо-данные для ЗАДАЧНИК - Компактная табличная система
+ * Демо-данные для ЗАДАЧНИК - Расширенная ролевая система
  */
 
 const DemoData = {
-    // Пользователи
-    users: [
-        { id: 'U1', name: 'Иван Петров', role: 'executor', available: false },
-        { id: 'U2', name: 'Елена Коваль', role: 'executor', available: true },
-        { id: 'U3', name: 'Анна Смирнова', role: 'executor', available: false },
-        { id: 'U4', name: 'Дмитрий Волков', role: 'executor', available: true },
-        { id: 'U5', name: 'Мария Новикова', role: 'executor', available: false },
-        { id: 'U6', name: 'Сергей Морозов', role: 'executor', available: true },
-        { id: 'U7', name: 'Ольга Соколова', role: 'executor', available: false },
-        { id: 'U8', name: 'Алексей Кузнецов', role: 'executor', available: true },
-        { id: 'U9', name: 'Татьяна Лебедева', role: 'executor', available: false },
-        { id: 'U10', name: 'Павел Орлов', role: 'executor', available: true }
-    ],
+    // Регионы
+    regions: ['Москва', 'Санкт-Петербург', 'Новосибирск', 'Екатеринбург'],
+    
+    // Пользователи по ролям
+    users: {
+        business: [
+            { id: 'bus1', email: 'ivanov@company.com', name: 'Иван Иванов', role: 'business', region: 'Москва' },
+            { id: 'bus2', email: 'petrov@company.com', name: 'Петр Петров', role: 'business', region: 'Санкт-Петербург' },
+            { id: 'bus3', email: 'sidorov@company.com', name: 'Сидор Сидоров', role: 'business', region: 'Новосибирск' },
+            { id: 'bus4', email: 'kozlov@company.com', name: 'Козлов Андрей', role: 'business', region: 'Екатеринбург' },
+            { id: 'bus5', email: 'novikov@company.com', name: 'Новиков Сергей', role: 'business', region: 'Москва' }
+        ],
+        manager: [
+            { id: 'mgr1', email: 'manager.msk@company.com', name: 'Анна Руководитель', role: 'manager', region: 'Москва' },
+            { id: 'mgr2', email: 'manager.spb@company.com', name: 'Елена Менеджер', role: 'manager', region: 'Санкт-Петербург' },
+            { id: 'mgr3', email: 'manager.nsk@company.com', name: 'Дмитрий Директор', role: 'manager', region: 'Новосибирск' },
+            { id: 'mgr4', email: 'manager.ekb@company.com', name: 'Ольга Управляющая', role: 'manager', region: 'Екатеринбург' }
+        ],
+        employee: [
+            // Москва
+            { id: 'emp1', email: 'emp1.msk@company.com', name: 'Алексей Работников', role: 'employee', region: 'Москва' },
+            { id: 'emp2', email: 'emp2.msk@company.com', name: 'Мария Исполнитель', role: 'employee', region: 'Москва' },
+            { id: 'emp3', email: 'emp3.msk@company.com', name: 'Николай Специалист', role: 'employee', region: 'Москва' },
+            { id: 'emp4', email: 'emp4.msk@company.com', name: 'Татьяна Эксперт', role: 'employee', region: 'Москва' },
+            // Санкт-Петербург
+            { id: 'emp5', email: 'emp1.spb@company.com', name: 'Владимир Петербургский', role: 'employee', region: 'Санкт-Петербург' },
+            { id: 'emp6', email: 'emp2.spb@company.com', name: 'Светлана Невская', role: 'employee', region: 'Санкт-Петербург' },
+            { id: 'emp7', email: 'emp3.spb@company.com', name: 'Игорь Северный', role: 'employee', region: 'Санкт-Петербург' },
+            // Новосибирск
+            { id: 'emp8', email: 'emp1.nsk@company.com', name: 'Павел Сибиряк', role: 'employee', region: 'Новосибирск' },
+            { id: 'emp9', email: 'emp2.nsk@company.com', name: 'Наталья Новосибирская', role: 'employee', region: 'Новосибирск' },
+            { id: 'emp10', email: 'emp3.nsk@company.com', name: 'Андрей Обской', role: 'employee', region: 'Новосибирск' },
+            // Екатеринбург
+            { id: 'emp11', email: 'emp1.ekb@company.com', name: 'Максим Уральский', role: 'employee', region: 'Екатеринбург' },
+            { id: 'emp12', email: 'emp2.ekb@company.com', name: 'Юлия Екатеринбургская', role: 'employee', region: 'Екатеринбург' },
+            { id: 'emp13', email: 'emp3.ekb@company.com', name: 'Роман Исетский', role: 'employee', region: 'Екатеринбург' }
+        ],
+        superuser: [
+            { id: 'super1', email: 'admin@company.com', name: 'Администратор Системы', role: 'superuser', region: null }
+        ]
+    },
     
     // Задачи (20+)
     tasks: [
         {
             id: 'T-001',
-            title: 'Разработка ТЗ проекта корпоративного портала',
-            status: 'in-progress',
+            region: 'Москва',
+            type: 'Оценка',
+            title: 'Оценка инвестиционного проекта строительства ТРЦ',
+            description: 'Необходимо провести оценку эффективности инвестиционного проекта строительства торгово-развлекательного центра в Москве',
             priority: 'high',
-            assignee: 'Иван Петров',
-            deadline: getDateString(5),
-            workload: 65
+            dueDate: getDateString(5),
+            documents: [
+                { id: 'doc1', name: 'Проект_ТРЦ.pdf', size: 2500000, type: 'application/pdf', uploadedBy: 'ivanov@company.com', uploadedByName: 'Иван Иванов', uploadedAt: getDateTimeString(-2), url: '#' }
+            ],
+            comments: [
+                { id: 'c1', text: 'Срочная задача, приоритет высокий', author: 'Иван Иванов', authorEmail: 'ivanov@company.com', authorRole: 'business', createdAt: getDateTimeString(-2) }
+            ],
+            status: 'in-progress',
+            businessUser: 'ivanov@company.com',
+            businessUserName: 'Иван Иванов',
+            assignedTo: ['emp1.msk@company.com'],
+            currentAssignee: 'emp1.msk@company.com',
+            createdAt: getDateTimeString(-3),
+            updatedAt: getDateTimeString(-1),
+            history: [
+                { date: getDateTimeString(-3), user: 'Иван Иванов', userRole: 'business', action: 'Создана', comment: 'Задача создана', status: 'created' },
+                { date: getDateTimeString(-2), user: 'Анна Руководитель', userRole: 'manager', action: 'Распределена', comment: 'Назначена на: Алексей Работников', status: 'assigned', assignedTo: ['emp1.msk@company.com'] },
+                { date: getDateTimeString(-1), user: 'Алексей Работников', userRole: 'employee', action: 'Принята в работу', comment: 'Задача принята в работу', status: 'in-progress' }
+            ]
         },
         {
             id: 'T-002',
-            title: 'Подбор фронтенд-разработчика React',
-            status: 'new',
-            priority: 'medium',
-            assignee: 'Елена Коваль',
-            deadline: getDateString(10),
-            workload: 40
+            region: 'Санкт-Петербург',
+            type: 'Экспертиза',
+            title: 'Экспертиза проекта реконструкции исторического здания',
+            description: 'Провести техническую экспертизу проекта реконструкции здания XIX века в центре Санкт-Петербурга',
+            priority: 'critical',
+            dueDate: getDateString(2),
+            documents: [],
+            comments: [],
+            status: 'approval',
+            businessUser: 'petrov@company.com',
+            businessUserName: 'Петр Петров',
+            assignedTo: ['emp1.spb@company.com', 'emp2.spb@company.com'],
+            currentAssignee: 'emp1.spb@company.com',
+            createdAt: getDateTimeString(-7),
+            updatedAt: getDateTimeString(0),
+            history: [
+                { date: getDateTimeString(-7), user: 'Петр Петров', userRole: 'business', action: 'Создана', comment: 'Задача создана', status: 'created' },
+                { date: getDateTimeString(-6), user: 'Елена Менеджер', userRole: 'manager', action: 'Распределена', comment: 'Назначена на: Владимир Петербургский, Светлана Невская', status: 'assigned', assignedTo: ['emp1.spb@company.com', 'emp2.spb@company.com'] },
+                { date: getDateTimeString(-5), user: 'Владимир Петербургский', userRole: 'employee', action: 'Принята в работу', comment: 'Начинаю экспертизу', status: 'in-progress' },
+                { date: getDateTimeString(0), user: 'Владимир Петербургский', userRole: 'employee', action: 'Отправлена на утверждение', comment: 'Экспертиза завершена', status: 'approval' }
+            ]
         },
         {
             id: 'T-003',
-            title: 'Дизайн лендинга для нового продукта',
-            status: 'done',
-            priority: 'low',
-            assignee: 'Анна Смирнова',
-            deadline: getDateString(-3),
-            workload: 100
+            region: 'Москва',
+            type: 'ПРКК',
+            title: 'Подготовка документов для ПРКК по объекту на Тверской',
+            description: 'Подготовить полный пакет документов для представления в Правительственную комиссию',
+            priority: 'medium',
+            dueDate: getDateString(10),
+            documents: [],
+            comments: [],
+            status: 'created',
+            businessUser: 'novikov@company.com',
+            businessUserName: 'Новиков Сергей',
+            assignedTo: [],
+            currentAssignee: null,
+            createdAt: getDateTimeString(-1),
+            updatedAt: getDateTimeString(-1),
+            history: [
+                { date: getDateTimeString(-1), user: 'Новиков Сергей', userRole: 'business', action: 'Создана', comment: 'Задача создана', status: 'created' }
+            ]
         },
         {
             id: 'T-004',
-            title: 'Настройка CI/CD pipeline для микросервисов',
-            status: 'in-progress',
-            priority: 'critical',
-            assignee: 'Дмитрий Волков',
-            deadline: getDateString(2),
-            workload: 85
+            region: 'Новосибирск',
+            type: 'Рецензия',
+            title: 'Рецензирование проектной документации жилого комплекса',
+            description: 'Провести рецензирование проектной документации на строительство жилого комплекса',
+            priority: 'high',
+            dueDate: getDateString(7),
+            documents: [
+                { id: 'doc2', name: 'Проект_ЖК.pdf', size: 5000000, type: 'application/pdf', uploadedBy: 'sidorov@company.com', uploadedByName: 'Сидор Сидоров', uploadedAt: getDateTimeString(-4), url: '#' }
+            ],
+            comments: [],
+            status: 'paused',
+            businessUser: 'sidorov@company.com',
+            businessUserName: 'Сидор Сидоров',
+            assignedTo: ['emp1.nsk@company.com'],
+            currentAssignee: 'emp1.nsk@company.com',
+            createdAt: getDateTimeString(-5),
+            updatedAt: getDateTimeString(-1),
+            history: [
+                { date: getDateTimeString(-5), user: 'Сидор Сидоров', userRole: 'business', action: 'Создана', comment: 'Задача создана', status: 'created' },
+                { date: getDateTimeString(-4), user: 'Дмитрий Директор', userRole: 'manager', action: 'Распределена', comment: 'Назначена на: Павел Сибиряк', status: 'assigned', assignedTo: ['emp1.nsk@company.com'] },
+                { date: getDateTimeString(-3), user: 'Павел Сибиряк', userRole: 'employee', action: 'Принята в работу', comment: 'Начинаю рецензирование', status: 'in-progress' },
+                { date: getDateTimeString(-1), user: 'Павел Сибиряк', userRole: 'employee', action: 'Поставлена на паузу', comment: 'Ожидание дополнительных материалов', status: 'paused' }
+            ]
         },
         {
             id: 'T-005',
-            title: 'Тестирование мобильного приложения iOS',
-            status: 'review',
+            region: 'Екатеринбург',
+            type: 'Оценка',
+            title: 'Оценка рыночной стоимости производственного комплекса',
+            description: 'Определить рыночную стоимость производственного комплекса для целей залога',
             priority: 'high',
-            assignee: 'Мария Новикова',
-            deadline: getDateString(7),
-            workload: 70
+            dueDate: getDateString(4),
+            documents: [],
+            comments: [],
+            status: 'rework',
+            businessUser: 'kozlov@company.com',
+            businessUserName: 'Козлов Андрей',
+            assignedTo: ['emp1.ekb@company.com'],
+            currentAssignee: 'emp1.ekb@company.com',
+            createdAt: getDateTimeString(-6),
+            updatedAt: getDateTimeString(-1),
+            history: [
+                { date: getDateTimeString(-6), user: 'Козлов Андрей', userRole: 'business', action: 'Создана', comment: 'Задача создана', status: 'created' },
+                { date: getDateTimeString(-5), user: 'Ольга Управляющая', userRole: 'manager', action: 'Распределена', comment: 'Назначена на: Максим Уральский', status: 'assigned', assignedTo: ['emp1.ekb@company.com'] },
+                { date: getDateTimeString(-4), user: 'Максим Уральский', userRole: 'employee', action: 'Принята в работу', comment: 'Приступаю к оценке', status: 'in-progress' },
+                { date: getDateTimeString(-1), user: 'Максим Уральский', userRole: 'employee', action: 'Отправлена на доработку', comment: 'Требуются уточнения по площади объекта', status: 'rework' }
+            ]
         },
         {
             id: 'T-006',
-            title: 'Оптимизация производительности базы данных',
-            status: 'in-progress',
-            priority: 'high',
-            assignee: 'Сергей Морозов',
-            deadline: getDateString(4),
-            workload: 75
+            region: 'Москва',
+            type: 'Отчетность',
+            title: 'Подготовка квартального отчета по оценочной деятельности',
+            description: 'Сформировать квартальный отчет по всем выполненным оценкам',
+            priority: 'medium',
+            dueDate: getDateString(15),
+            documents: [],
+            comments: [],
+            status: 'assigned',
+            businessUser: 'ivanov@company.com',
+            businessUserName: 'Иван Иванов',
+            assignedTo: ['emp2.msk@company.com'],
+            currentAssignee: 'emp2.msk@company.com',
+            createdAt: getDateTimeString(-2),
+            updatedAt: getDateTimeString(-1),
+            history: [
+                { date: getDateTimeString(-2), user: 'Иван Иванов', userRole: 'business', action: 'Создана', comment: 'Задача создана', status: 'created' },
+                { date: getDateTimeString(-1), user: 'Анна Руководитель', userRole: 'manager', action: 'Распределена', comment: 'Назначена на: Мария Исполнитель', status: 'assigned', assignedTo: ['emp2.msk@company.com'] }
+            ]
         },
         {
             id: 'T-007',
-            title: 'Создание документации API v2.0',
-            status: 'new',
-            priority: 'medium',
-            assignee: 'Ольга Соколова',
-            deadline: getDateString(15),
-            workload: 30
+            region: 'Санкт-Петербург',
+            type: 'Подготовка СЗ',
+            title: 'Подготовка справки о залоговой стоимости недвижимости',
+            description: 'Подготовить справку о залоговой стоимости квартиры для банка',
+            priority: 'high',
+            dueDate: getDateString(3),
+            documents: [],
+            comments: [],
+            status: 'in-progress',
+            businessUser: 'petrov@company.com',
+            businessUserName: 'Петр Петров',
+            assignedTo: ['emp3.spb@company.com'],
+            currentAssignee: 'emp3.spb@company.com',
+            createdAt: getDateTimeString(-3),
+            updatedAt: getDateTimeString(-1),
+            history: [
+                { date: getDateTimeString(-3), user: 'Петр Петров', userRole: 'business', action: 'Создана', comment: 'Задача создана', status: 'created' },
+                { date: getDateTimeString(-2), user: 'Елена Менеджер', userRole: 'manager', action: 'Распределена', comment: 'Назначена на: Игорь Северный', status: 'assigned', assignedTo: ['emp3.spb@company.com'] },
+                { date: getDateTimeString(-1), user: 'Игорь Северный', userRole: 'employee', action: 'Принята в работу', comment: 'Начинаю подготовку справки', status: 'in-progress' }
+            ]
         },
         {
             id: 'T-008',
-            title: 'Миграция данных на новый сервер',
-            status: 'paused',
+            region: 'Новосибирск',
+            type: 'Экспертиза',
+            title: 'Экспертиза проекта торгового центра',
+            description: 'Провести строительно-техническую экспертизу проекта торгового центра',
             priority: 'critical',
-            assignee: 'Алексей Кузнецов',
-            deadline: getDateString(1),
-            workload: 90
+            dueDate: getDateString(1),
+            documents: [],
+            comments: [],
+            status: 'approved',
+            businessUser: 'sidorov@company.com',
+            businessUserName: 'Сидор Сидоров',
+            assignedTo: ['emp2.nsk@company.com'],
+            currentAssignee: 'emp2.nsk@company.com',
+            createdAt: getDateTimeString(-10),
+            updatedAt: getDateTimeString(-1),
+            history: [
+                { date: getDateTimeString(-10), user: 'Сидор Сидоров', userRole: 'business', action: 'Создана', comment: 'Задача создана', status: 'created' },
+                { date: getDateTimeString(-9), user: 'Дмитрий Директор', userRole: 'manager', action: 'Распределена', comment: 'Назначена на: Наталья Новосибирская', status: 'assigned', assignedTo: ['emp2.nsk@company.com'] },
+                { date: getDateTimeString(-8), user: 'Наталья Новосибирская', userRole: 'employee', action: 'Принята в работу', comment: 'Начинаю экспертизу', status: 'in-progress' },
+                { date: getDateTimeString(-2), user: 'Наталья Новосибирская', userRole: 'employee', action: 'Отправлена на утверждение', comment: 'Экспертиза завершена', status: 'approval' },
+                { date: getDateTimeString(-1), user: 'Дмитрий Директор', userRole: 'manager', action: 'Согласовано', comment: 'Экспертиза принята', status: 'approved' }
+            ]
         },
         {
             id: 'T-009',
-            title: 'Разработка модуля аналитики и отчетов',
+            region: 'Екатеринбург',
+            type: 'Оценка',
+            title: 'Оценка земельного участка под застройку',
+            description: 'Оценить рыночную стоимость земельного участка площадью 5 га',
+            priority: 'medium',
+            dueDate: getDateString(12),
+            documents: [],
+            comments: [],
             status: 'in-progress',
-            priority: 'high',
-            assignee: 'Татьяна Лебедева',
-            deadline: getDateString(8),
-            workload: 60
+            businessUser: 'kozlov@company.com',
+            businessUserName: 'Козлов Андрей',
+            assignedTo: ['emp2.ekb@company.com'],
+            currentAssignee: 'emp2.ekb@company.com',
+            createdAt: getDateTimeString(-4),
+            updatedAt: getDateTimeString(-2),
+            history: [
+                { date: getDateTimeString(-4), user: 'Козлов Андрей', userRole: 'business', action: 'Создана', comment: 'Задача создана', status: 'created' },
+                { date: getDateTimeString(-3), user: 'Ольга Управляющая', userRole: 'manager', action: 'Распределена', comment: 'Назначена на: Юлия Екатеринбургская', status: 'assigned', assignedTo: ['emp2.ekb@company.com'] },
+                { date: getDateTimeString(-2), user: 'Юлия Екатеринбургская', userRole: 'employee', action: 'Принята в работу', comment: 'Приступаю к оценке', status: 'in-progress' }
+            ]
         },
         {
             id: 'T-010',
-            title: 'Интеграция с платежной системой Stripe',
-            status: 'new',
-            priority: 'high',
-            assignee: 'Павел Орлов',
-            deadline: getDateString(12),
-            workload: 55
-        },
-        {
-            id: 'T-011',
-            title: 'Рефакторинг legacy кода в модуле авторизации',
-            status: 'in-progress',
-            priority: 'medium',
-            assignee: 'Иван Петров',
-            deadline: getDateString(20),
-            workload: 45
-        },
-        {
-            id: 'T-012',
-            title: 'Проведение code review для команды',
-            status: 'review',
+            region: 'Москва',
+            type: 'Прочее',
+            title: 'Консультация по вопросам оценки',
+            description: 'Провести консультацию клиента по вопросам оценки бизнеса',
             priority: 'low',
-            assignee: 'Елена Коваль',
-            deadline: getDateString(6),
-            workload: 25
+            dueDate: getDateString(20),
+            documents: [],
+            comments: [],
+            status: 'created',
+            businessUser: 'novikov@company.com',
+            businessUserName: 'Новиков Сергей',
+            assignedTo: [],
+            currentAssignee: null,
+            createdAt: getDateTimeString(0),
+            updatedAt: getDateTimeString(0),
+            history: [
+                { date: getDateTimeString(0), user: 'Новиков Сергей', userRole: 'business', action: 'Создана', comment: 'Задача создана', status: 'created' }
+            ]
         },
-        {
-            id: 'T-013',
-            title: 'Настройка мониторинга и алертов Grafana',
-            status: 'new',
-            priority: 'medium',
-            assignee: 'Дмитрий Волков',
-            deadline: getDateString(14),
-            workload: 35
-        },
-        {
-            id: 'T-014',
-            title: 'Разработка email-рассылок для маркетинга',
-            status: 'done',
-            priority: 'low',
-            assignee: 'Анна Смирнова',
-            deadline: getDateString(-5),
-            workload: 100
-        },
-        {
-            id: 'T-015',
-            title: 'Тестирование безопасности веб-приложения',
-            status: 'in-progress',
-            priority: 'critical',
-            assignee: 'Мария Новикова',
-            deadline: getDateString(3),
-            workload: 80
-        },
-        {
-            id: 'T-016',
-            title: 'Создание прототипа нового интерфейса',
-            status: 'new',
-            priority: 'medium',
-            assignee: 'Сергей Морозов',
-            deadline: getDateString(18),
-            workload: 50
-        },
-        {
-            id: 'T-017',
-            title: 'Оптимизация SEO для корпоративного сайта',
-            status: 'review',
-            priority: 'low',
-            assignee: 'Ольга Соколова',
-            deadline: getDateString(9),
-            workload: 40
-        },
-        {
-            id: 'T-018',
-            title: 'Разработка мобильной версии админ-панели',
-            status: 'in-progress',
-            priority: 'high',
-            assignee: 'Алексей Кузнецов',
-            deadline: getDateString(11),
-            workload: 70
-        },
-        {
-            id: 'T-019',
-            title: 'Настройка резервного копирования данных',
-            status: 'new',
-            priority: 'critical',
-            assignee: 'Татьяна Лебедева',
-            deadline: getDateString(4),
-            workload: 60
-        },
-        {
-            id: 'T-020',
-            title: 'Проведение обучения новых сотрудников',
-            status: 'done',
-            priority: 'low',
-            assignee: 'Павел Орлов',
-            deadline: getDateString(-2),
-            workload: 100
-        },
-        {
-            id: 'T-021',
-            title: 'Разработка системы уведомлений push',
-            status: 'in-progress',
-            priority: 'medium',
-            assignee: 'Иван Петров',
-            deadline: getDateString(16),
-            workload: 55
-        },
-        {
-            id: 'T-022',
-            title: 'Анализ конкурентов и рынка',
-            status: 'new',
-            priority: 'low',
-            assignee: 'Елена Коваль',
-            deadline: getDateString(25),
-            workload: 20
-        },
-        {
-            id: 'T-023',
-            title: 'Интеграция с CRM системой Salesforce',
-            status: 'review',
-            priority: 'high',
-            assignee: 'Дмитрий Волков',
-            deadline: getDateString(7),
-            workload: 65
-        },
-        {
-            id: 'T-024',
-            title: 'Создание видео-инструкций для пользователей',
-            status: 'new',
-            priority: 'medium',
-            assignee: 'Анна Смирнова',
-            deadline: getDateString(22),
-            workload: 45
-        },
-        {
-            id: 'T-025',
-            title: 'Оптимизация скорости загрузки страниц',
-            status: 'in-progress',
-            priority: 'high',
-            assignee: 'Мария Новикова',
-            deadline: getDateString(6),
-            workload: 70
-        }
+        // Добавим еще 15 задач для полноты
+        ...generateAdditionalTasks(11, 25)
     ]
 };
 
-// Вспомогательная функция для получения даты
+// Вспомогательные функции
 function getDateString(daysFromNow) {
     const date = new Date();
     date.setDate(date.getDate() + daysFromNow);
     return date.toISOString().split('T')[0];
 }
 
-// Экспорт для использования в других модулях
+function getDateTimeString(daysFromNow) {
+    const date = new Date();
+    date.setDate(date.getDate() + daysFromNow);
+    return date.toISOString();
+}
+
+function generateAdditionalTasks(startId, endId) {
+    const tasks = [];
+    const regions = DemoData.regions;
+    const types = ['Оценка', 'Экспертиза', 'Рецензия', 'ПРКК', 'Прочее', 'Отчетность', 'Подготовка СЗ'];
+    const priorities = ['low', 'medium', 'high', 'critical'];
+    const statuses = ['created', 'assigned', 'in-progress', 'paused', 'rework', 'approval', 'approved'];
+    
+    for (let i = startId; i <= endId; i++) {
+        const region = regions[i % regions.length];
+        const type = types[i % types.length];
+        const priority = priorities[i % priorities.length];
+        const status = statuses[i % statuses.length];
+        const daysOffset = (i % 30) - 10;
+        
+        tasks.push({
+            id: `T-${String(i).padStart(3, '0')}`,
+            region: region,
+            type: type,
+            title: `Задача ${i}: ${type} для региона ${region}`,
+            description: `Описание задачи ${i}. Требуется выполнить ${type.toLowerCase()} в регионе ${region}.`,
+            priority: priority,
+            dueDate: getDateString(daysOffset + 10),
+            documents: [],
+            comments: [],
+            status: status,
+            businessUser: DemoData.users.business[i % DemoData.users.business.length].email,
+            businessUserName: DemoData.users.business[i % DemoData.users.business.length].name,
+            assignedTo: status !== 'created' ? [getEmployeeForRegion(region)] : [],
+            currentAssignee: status !== 'created' ? getEmployeeForRegion(region) : null,
+            createdAt: getDateTimeString(-Math.abs(daysOffset) - 5),
+            updatedAt: getDateTimeString(-Math.abs(daysOffset)),
+            history: [
+                {
+                    date: getDateTimeString(-Math.abs(daysOffset) - 5),
+                    user: DemoData.users.business[i % DemoData.users.business.length].name,
+                    userRole: 'business',
+                    action: 'Создана',
+                    comment: 'Задача создана',
+                    status: 'created'
+                }
+            ]
+        });
+    }
+    
+    return tasks;
+}
+
+function getEmployeeForRegion(region) {
+    const employees = DemoData.users.employee.filter(e => e.region === region);
+    return employees.length > 0 ? employees[0].email : DemoData.users.employee[0].email;
+}
+
+// Экспорт
 window.DemoData = DemoData;
