@@ -628,9 +628,12 @@ class ZadachnikApp {
             <h4>${task.id}: ${task.title}</h4>
             <p><strong>Регион:</strong> ${task.region}</p>
             <p><strong>Тип:</strong> ${task.type}</p>
-            <p><strong>Приоритет:</strong> ${this.getPriorityText(task.priority)}</p>
-            <p><strong>Срок:</strong> ${this.formatDate(task.dueDate)}</p>
+            <p><strong>Описание:</strong> ${task.description || 'Нет описания'}</p>
         `;
+        
+        // Заполняем приоритет и срок текущими значениями
+        document.getElementById('assign-priority').value = task.priority;
+        document.getElementById('assign-deadline').value = task.dueDate;
         
         // Очищаем поиск и комментарий
         document.getElementById('employee-search').value = '';
@@ -657,6 +660,7 @@ class ZadachnikApp {
         if (!this.users.employee) {
             console.error('users.employee is undefined!');
             this.allEmployees = [];
+            this.renderEmployeesSelect();
             this.renderEmployeesGrid();
             return;
         }
@@ -684,7 +688,39 @@ class ZadachnikApp {
             available: (workloadByUser[emp.email] || 0) < 80
         }));
         
+        // Сортируем: сначала доступные, потом по имени
+        this.allEmployees.sort((a, b) => {
+            if (a.available !== b.available) {
+                return a.available ? -1 : 1;
+            }
+            return a.name.localeCompare(b.name);
+        });
+        
         console.log('All employees with workload:', this.allEmployees.length);
+        this.renderEmployeesSelect();
+        this.renderEmployeesGrid();
+    }
+    
+    renderEmployeesSelect() {
+        const select = document.getElementById('assign-employee-select');
+        if (!select) return;
+        
+        const searchText = document.getElementById('employee-search').value.toLowerCase();
+        
+        const filteredEmployees = this.allEmployees.filter(emp => 
+            emp.name.toLowerCase().includes(searchText) || 
+            emp.email.toLowerCase().includes(searchText)
+        );
+        
+        select.innerHTML = filteredEmployees.map(emp => {
+            const statusIcon = emp.available ? '🟢' : '🔴';
+            const workloadText = `${emp.workload}%`;
+            return `<option value="${emp.email}">${statusIcon} ${emp.name} - Загрузка: ${workloadText}</option>`;
+        }).join('');
+    }
+    
+    filterEmployeesInSelect() {
+        this.renderEmployeesSelect();
         this.renderEmployeesGrid();
     }
     
@@ -727,19 +763,45 @@ class ZadachnikApp {
         this.renderEmployeesGrid();
     }
     
-    selectEmployee(employeeEmail) {
+    // Подтверждение распределения через кнопку
+    confirmAssignment() {
         if (!this.currentTask) return;
         
-        const employee = this.allEmployees.find(e => e.email === employeeEmail);
-        if (!employee) return;
+        const employeeSelect = document.getElementById('assign-employee-select');
+        const selectedEmail = employeeSelect.value;
         
+        if (!selectedEmail) {
+            alert('Выберите сотрудника из списка');
+            return;
+        }
+        
+        const employee = this.allEmployees.find(e => e.email === selectedEmail);
+        if (!employee) {
+            alert('Сотрудник не найден');
+            return;
+        }
+        
+        // Получаем обновленные значения
+        const newPriority = document.getElementById('assign-priority').value;
+        const newDeadline = document.getElementById('assign-deadline').value;
         const comment = document.getElementById('assign-comment').value.trim();
         
         if (confirm(`Распределить задачу "${this.currentTask.title}" на ${employee.name}?`)) {
             try {
+                // Обновляем приоритет, если изменился
+                if (newPriority !== this.currentTask.priority) {
+                    this.workflow.changePriority(this.currentTask, newPriority, `Приоритет изменен при распределении`);
+                }
+                
+                // Обновляем срок, если изменился
+                if (newDeadline !== this.currentTask.dueDate) {
+                    this.workflow.changeDeadline(this.currentTask, newDeadline, `Срок изменен при распределении`);
+                }
+                
+                // Распределяем задачу
                 const updatedTask = this.workflow.assignTask(
                     this.currentTask, 
-                    [employeeEmail], 
+                    [selectedEmail], 
                     comment || `Задача распределена на ${employee.name}`
                 );
                 
@@ -750,17 +812,23 @@ class ZadachnikApp {
                     this.applyFilters();
                     this.closeAssignModal();
                     
-                    // Если карточка задачи открыта, обновляем её
-                    if (document.getElementById('task-modal').classList.contains('active')) {
-                        this.openTaskCard(this.currentTask.id);
-                    }
-                    
                     alert(`✅ Задача успешно распределена на ${employee.name}`);
                 }
             } catch (error) {
                 alert('Ошибка: ' + error.message);
             }
         }
+    }
+    
+    // Быстрое распределение по клику на карточку
+    selectEmployee(employeeEmail) {
+        if (!this.currentTask) return;
+        
+        const employee = this.allEmployees.find(e => e.email === employeeEmail);
+        if (!employee) return;
+        
+        // Устанавливаем выбранного сотрудника в select
+        document.getElementById('assign-employee-select').value = employeeEmail;
     }
     
     closeAssignModal() {

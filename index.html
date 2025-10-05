@@ -286,21 +286,50 @@
                         <!-- Информация о задаче -->
                     </div>
                     
-                    <div class="form-group">
-                        <label>🔍 Поиск сотрудника:</label>
-                        <input type="text" id="employee-search" placeholder="Введите имя..." onkeyup="app.filterEmployees()">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="assign-priority">Приоритет:</label>
+                            <select id="assign-priority">
+                                <option value="low">Низкий</option>
+                                <option value="medium">Средний</option>
+                                <option value="high">Высокий</option>
+                                <option value="critical">Критический</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="assign-deadline">Срок выполнения:</label>
+                            <input type="date" id="assign-deadline">
+                        </div>
                     </div>
                     
                     <div class="form-group">
-                        <label>Выберите сотрудника (клик для назначения):</label>
-                        <div class="employees-grid" id="employees-grid">
+                        <label for="assign-employee-select">Выберите сотрудника:</label>
+                        <select id="assign-employee-select" size="10" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
                             <!-- Список сотрудников -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>🔍 Поиск сотрудника:</label>
+                        <input type="text" id="employee-search" placeholder="Введите имя..." onkeyup="app.filterEmployeesInSelect()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Или выберите из карточек (клик для быстрого назначения):</label>
+                        <div class="employees-grid" id="employees-grid">
+                            <!-- Список сотрудников карточками -->
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label for="assign-comment">Комментарий (необязательно):</label>
                         <textarea id="assign-comment" rows="2" placeholder="Дополнительные указания..."></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="app.closeAssignModal()">Отмена</button>
+                        <button class="btn btn-primary" onclick="app.confirmAssignment()">Распределить</button>
                     </div>
                 </div>
             </div>
