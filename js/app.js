@@ -345,11 +345,18 @@ class ZadachnikApp {
     }
     
     handleAction(taskId, actionId) {
+        console.log('handleAction called:', taskId, actionId);
         const task = this.tasks.find(t => t.id === taskId);
-        if (!task) return;
+        if (!task) {
+            console.error('Task not found:', taskId);
+            return;
+        }
+        
+        console.log('Task found:', task);
         
         // Для распределения открываем специальное модальное окно
         if (actionId === 'assign') {
+            console.log('Opening assign modal');
             this.showAssignModal(task);
             return;
         }
@@ -602,10 +609,16 @@ class ZadachnikApp {
     
     // Модальное окно распределения задачи
     showAssignModal(task) {
+        console.log('showAssignModal called with task:', task);
         this.currentTask = task;
         
         // Заполняем информацию о задаче
         const taskInfo = document.getElementById('assign-task-info');
+        if (!taskInfo) {
+            console.error('assign-task-info element not found!');
+            return;
+        }
+        
         taskInfo.innerHTML = `
             <h4>${task.id}: ${task.title}</h4>
             <p><strong>Регион:</strong> ${task.region}</p>
@@ -619,13 +632,32 @@ class ZadachnikApp {
         document.getElementById('assign-comment').value = '';
         
         // Загружаем сотрудников региона
+        console.log('Loading employees for region:', task.region);
         this.loadEmployeesForAssign(task.region);
         
-        document.getElementById('assign-modal').classList.add('active');
+        const modal = document.getElementById('assign-modal');
+        if (!modal) {
+            console.error('assign-modal element not found!');
+            return;
+        }
+        
+        console.log('Opening assign modal');
+        modal.classList.add('active');
     }
     
     loadEmployeesForAssign(region) {
+        console.log('loadEmployeesForAssign - region:', region);
+        console.log('All users:', this.users);
+        
+        if (!this.users.employee) {
+            console.error('users.employee is undefined!');
+            this.allEmployees = [];
+            this.renderEmployeesGrid();
+            return;
+        }
+        
         const employees = this.users.employee.filter(e => e.region === region);
+        console.log('Filtered employees for region:', employees.length);
         
         // Рассчитываем загрузку каждого сотрудника
         const workloadByUser = {};
@@ -647,6 +679,7 @@ class ZadachnikApp {
             available: (workloadByUser[emp.email] || 0) < 80
         }));
         
+        console.log('All employees with workload:', this.allEmployees.length);
         this.renderEmployeesGrid();
     }
     
