@@ -43,16 +43,31 @@ class ZadachnikApp {
     
     loadData() {
         this.tasks = this.storage.getTasks();
-        const usersData = this.storage.getUsers();
-        this.users = usersData || (window.DemoData ? DemoData.users : {});
-        if (!usersData && window.DemoData) {
-            this.storage.saveUsers(this.users);
+        let usersData = this.storage.getUsers();
+        
+        // ВАЖНО: Проверяем, есть ли сотрудники в сохраненных данных
+        // Если нет или их мало - принудительно перезагружаем демо-данные
+        if (!usersData || !usersData.employee || usersData.employee.length < 100) {
+            console.warn('Users data is outdated or incomplete, reloading demo data...');
+            if (window.DemoData) {
+                this.users = DemoData.users;
+                this.storage.saveUsers(this.users);
+                console.log('Demo users reloaded:', this.users);
+            }
+        } else {
+            this.users = usersData;
         }
         
         console.log('Loaded data:');
         console.log('Tasks:', this.tasks.length);
         console.log('Users structure:', this.users);
         console.log('Users.employee:', this.users.employee ? this.users.employee.length : 'undefined');
+        
+        // Если все еще нет сотрудников - критическая ошибка
+        if (!this.users.employee || this.users.employee.length === 0) {
+            console.error('CRITICAL: No employees loaded!');
+            alert('Ошибка: Не загружены сотрудники. Перезагрузите страницу с очисткой кеша (Ctrl+Shift+R)');
+        }
     }
     
     setupUI() {
@@ -880,6 +895,36 @@ class ZadachnikApp {
         document.getElementById('assign-modal').classList.remove('active');
         this.currentTask = null;
         this.allEmployees = [];
+    }
+    
+    reloadDemoData() {
+        if (confirm('Перезагрузить демо-данные? Все текущие данные будут заменены.')) {
+            console.log('Reloading demo data...');
+            
+            // Очищаем localStorage
+            localStorage.removeItem('zadachnik_tasks');
+            localStorage.removeItem('zadachnik_users');
+            
+            // Загружаем свежие демо-данные
+            if (window.DemoData) {
+                this.tasks = DemoData.tasks;
+                this.users = DemoData.users;
+                this.storage.saveTasks(this.tasks);
+                this.storage.saveUsers(this.users);
+                
+                console.log('Demo data reloaded:');
+                console.log('Tasks:', this.tasks.length);
+                console.log('Users.employee:', this.users.employee ? this.users.employee.length : 'undefined');
+                
+                // Перезагружаем UI
+                this.setupUI();
+                this.applyFilters();
+                
+                alert('✅ Демо-данные успешно перезагружены! Теперь доступно 120 сотрудников.');
+            } else {
+                alert('❌ Ошибка: DemoData не найден');
+            }
+        }
     }
     
     exportToCSV() {
