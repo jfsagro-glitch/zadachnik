@@ -27,7 +27,11 @@
                         <option value="Новосибирск">Новосибирск</option>
                         <option value="Екатеринбург">Екатеринбург</option>
                     </select>
+                    <select id="employee-select" onchange="app.switchEmployee()" style="display:none;">
+                        <option value="">Выберите сотрудника...</option>
+                    </select>
                     <span class="user-info" id="current-user-name"></span>
+                    <span class="user-tasks-count" id="user-tasks-count" style="display:none;"></span>
                 </div>
             </div>
             <div class="header-actions">

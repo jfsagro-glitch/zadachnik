@@ -80,11 +80,26 @@ class ZadachnikApp {
         const user = this.auth.getCurrentUser();
         document.getElementById('current-user-name').textContent = user.name;
         document.getElementById('role-select').value = user.role;
-        if (user.region) {
+        
+        // Показываем select региона для ролей, которым он нужен
+        if (user.region && (user.role === 'manager' || user.role === 'business')) {
             document.getElementById('region-select').value = user.region;
             document.getElementById('region-select').style.display = 'inline-block';
         } else {
             document.getElementById('region-select').style.display = 'none';
+        }
+        
+        // Показываем select сотрудника для роли "Сотрудник"
+        const employeeSelect = document.getElementById('employee-select');
+        if (user.role === 'employee') {
+            employeeSelect.style.display = 'inline-block';
+            this.populateEmployeeSelect();
+            // Устанавливаем текущего сотрудника, если он выбран
+            if (user.employeeEmail) {
+                employeeSelect.value = user.employeeEmail;
+            }
+        } else {
+            employeeSelect.style.display = 'none';
         }
     }
     
@@ -120,6 +135,71 @@ class ZadachnikApp {
         user.region = region;
         this.auth.saveCurrentUser();
         this.applyFilters();
+    }
+    
+    populateEmployeeSelect() {
+        const employeeSelect = document.getElementById('employee-select');
+        if (!employeeSelect) return;
+        
+        // Получаем всех сотрудников
+        let employeesList = [];
+        if (Array.isArray(this.users)) {
+            employeesList = this.users.filter(u => u.role === 'employee');
+        } else if (this.users.employee && Array.isArray(this.users.employee)) {
+            employeesList = this.users.employee;
+        }
+        
+        // Группируем по регионам
+        const regions = ['Москва', 'Санкт-Петербург', 'Новосибирск', 'Екатеринбург'];
+        
+        let html = '<option value="">Выберите сотрудника...</option>';
+        
+        regions.forEach(region => {
+            const regionEmployees = employeesList.filter(e => e.region === region);
+            if (regionEmployees.length > 0) {
+                html += `<optgroup label="${region}">`;
+                regionEmployees.forEach(emp => {
+                    html += `<option value="${emp.email}">${emp.name}</option>`;
+                });
+                html += '</optgroup>';
+            }
+        });
+        
+        employeeSelect.innerHTML = html;
+    }
+    
+    switchEmployee() {
+        const employeeEmail = document.getElementById('employee-select').value;
+        if (!employeeEmail) return;
+        
+        // Находим выбранного сотрудника
+        let employee = null;
+        if (Array.isArray(this.users)) {
+            employee = this.users.find(u => u.email === employeeEmail);
+        } else if (this.users.employee) {
+            employee = this.users.employee.find(e => e.email === employeeEmail);
+        }
+        
+        if (!employee) {
+            alert('Сотрудник не найден');
+            return;
+        }
+        
+        // Обновляем текущего пользователя
+        const user = this.auth.getCurrentUser();
+        user.name = employee.name;
+        user.email = employee.email;
+        user.employeeEmail = employee.email;
+        user.region = employee.region;
+        this.auth.saveCurrentUser();
+        
+        // Обновляем UI
+        document.getElementById('current-user-name').textContent = employee.name;
+        
+        // Перезагружаем задачи (теперь будут показаны только задачи этого сотрудника)
+        this.applyFilters();
+        
+        console.log('Switched to employee:', employee.name, employee.email);
     }
     
     applyFilters() {
@@ -182,6 +262,23 @@ class ZadachnikApp {
     updateStats() {
         document.getElementById('visible-count').textContent = this.filteredTasks.length;
         document.getElementById('total-count').textContent = this.tasks.length;
+        
+        // Для роли сотрудник показываем количество его задач
+        const user = this.auth.getCurrentUser();
+        const tasksCountEl = document.getElementById('user-tasks-count');
+        
+        if (user.role === 'employee' && user.employeeEmail) {
+            const employeeTasks = this.tasks.filter(t => 
+                t.assignedTo && t.assignedTo.includes(user.employeeEmail)
+            );
+            const activeTasks = employeeTasks.filter(t => t.status !== 'approved').length;
+            const completedTasks = employeeTasks.filter(t => t.status === 'approved').length;
+            
+            tasksCountEl.textContent = `📋 Задач: ${activeTasks} активных / ${completedTasks} завершено`;
+            tasksCountEl.style.display = 'inline-block';
+        } else {
+            tasksCountEl.style.display = 'none';
+        }
     }
     
     renderTable() {

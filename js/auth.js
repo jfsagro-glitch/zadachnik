@@ -159,7 +159,9 @@ class AuthManager {
         
         // Сотрудник видит назначенные ему задачи
         if (role === 'employee') {
-            return task.assignedTo && task.assignedTo.includes(userEmail);
+            // Проверяем по email сотрудника (если выбран конкретный)
+            const employeeEmail = this.currentUser.employeeEmail || userEmail;
+            return task.assignedTo && task.assignedTo.includes(employeeEmail);
         }
         
         return false;
