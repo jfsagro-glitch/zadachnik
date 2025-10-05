@@ -653,6 +653,88 @@ textarea {
     color: #F44336;
 }
 
+/* Настройки */
+.settings-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.settings-section:last-of-type {
+    border-bottom: none;
+}
+
+.settings-section h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.settings-section p {
+    margin: 8px 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.theme-preview {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 2px dashed #ccc;
+}
+
+.preview-box {
+    background: white;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.preview-header {
+    padding: 10px 15px;
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.preview-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.preview-text {
+    font-size: 13px;
+    color: var(--text-color);
+}
+
+.preview-button {
+    padding: 8px 16px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    align-self: flex-start;
+}
+
+body.theme-dark .preview-box {
+    background: #2d2d2d;
+}
+
+body.theme-dark .preview-text {
+    color: #e0e0e0;
+}
+
+body.theme-balanced .preview-header {
+    background: #1877f2;
+}
+
 /* Адаптивность модальных окон */
 @media (max-width: 768px) {
     .modal-content {

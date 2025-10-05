@@ -37,6 +37,7 @@
             <div class="header-actions">
                 <button class="btn btn-primary" onclick="app.createNewTask()" id="btn-create-task">➕ Новая задача</button>
                 <button class="btn btn-secondary" onclick="app.showAnalytics()" id="btn-analytics" style="display:none;">📊 Аналитика</button>
+                <button class="btn btn-secondary" onclick="app.showSettings()">⚙️ Настройки</button>
                 <button class="btn btn-secondary" onclick="app.reloadDemoData()" title="Перезагрузить демо-данные">🔄 Обновить данные</button>
                 <button class="btn btn-secondary" onclick="app.exportToCSV()">📥 Экспорт CSV</button>
             </div>
@@ -338,6 +339,53 @@
                     <div class="form-actions">
                         <button class="btn btn-secondary" onclick="app.closeAssignModal()">Закрыть</button>
                         <button class="btn btn-primary" onclick="app.confirmAssignment()">Распределить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно настроек -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>⚙️ Настройки</h2>
+                    <span class="close" onclick="app.closeSettingsModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h3>🎨 Внешний вид</h3>
+                        
+                        <div class="form-group">
+                            <label for="theme-select">Тема оформления:</label>
+                            <select id="theme-select" onchange="app.changeTheme()">
+                                <option value="light">☀️ Светлая</option>
+                                <option value="dark">🌙 Темная</option>
+                                <option value="balanced">⚖️ Сбалансированная</option>
+                            </select>
+                        </div>
+                        
+                        <div class="theme-preview" id="theme-preview">
+                            <div class="preview-box">
+                                <div class="preview-header">Предпросмотр темы</div>
+                                <div class="preview-content">
+                                    <div class="preview-text">Текст в выбранной теме</div>
+                                    <button class="preview-button">Кнопка</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>ℹ️ Информация</h3>
+                        <p><strong>Версия:</strong> 2.0.0</p>
+                        <p><strong>Хостинг:</strong> GitHub Pages</p>
+                        <p><strong>Хранилище:</strong> localStorage</p>
+                        <p><strong>Сотрудников:</strong> 120 (по 30 на регион)</p>
+                        <p><strong>Регионов:</strong> 4</p>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="app.closeSettingsModal()">Закрыть</button>
                     </div>
                 </div>
             </div>

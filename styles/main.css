@@ -10,6 +10,60 @@
     --text-color: #333;
     --border-color: #ddd;
     --hover-color: #e3f2fd;
+    --card-bg: #ffffff;
+    --header-bg: #ffffff;
+}
+
+/* Темная тема */
+body.theme-dark {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --border-color: #333;
+    --hover-color: #2c2c2c;
+    --card-bg: #2d2d2d;
+    --header-bg: #2d2d2d;
+}
+
+body.theme-dark .compact-table thead {
+    background: #333;
+}
+
+body.theme-dark .compact-table tbody tr:hover {
+    background: #3a3a3a;
+}
+
+body.theme-dark .filters-panel,
+body.theme-dark .header,
+body.theme-dark .table-wrapper {
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+body.theme-dark input,
+body.theme-dark select,
+body.theme-dark textarea {
+    background: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+/* Сбалансированная тема */
+body.theme-balanced {
+    --bg-color: #f0f2f5;
+    --text-color: #1c1e21;
+    --border-color: #ccd0d5;
+    --hover-color: #e4e6eb;
+    --card-bg: #ffffff;
+    --header-bg: #ffffff;
+    --primary-color: #1877f2;
+}
+
+body.theme-balanced .compact-table thead {
+    background: #e4e6eb;
+}
+
+body.theme-balanced .header {
+    border-bottom: 1px solid #ccd0d5;
 }
 
 * {
@@ -38,7 +92,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 15px;
-    background: white;
+    background: var(--header-bg);
     border-radius: 4px;
     margin-bottom: 10px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -157,7 +211,7 @@ body {
     align-items: center;
     gap: 10px;
     padding: 10px 15px;
-    background: white;
+    background: var(--card-bg);
     border-radius: 4px;
     margin-bottom: 10px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -200,7 +254,7 @@ body {
 
 /* Компактная таблица */
 .table-wrapper {
-    background: white;
+    background: var(--card-bg);
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     overflow-x: auto;

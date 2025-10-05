@@ -28,6 +28,9 @@ class ZadachnikApp {
     }
     
     init() {
+        // Загрузка темы
+        this.loadTheme();
+        
         // Инициализация демо-данных
         this.storage.initDemoData();
         
@@ -806,6 +809,42 @@ class ZadachnikApp {
     
     closeAnalyticsModal() {
         document.getElementById('analytics-modal').classList.remove('active');
+    }
+    
+    showSettings() {
+        // Загружаем текущую тему
+        const savedTheme = localStorage.getItem('zadachnik_theme') || 'light';
+        document.getElementById('theme-select').value = savedTheme;
+        
+        document.getElementById('settings-modal').classList.add('active');
+    }
+    
+    closeSettingsModal() {
+        document.getElementById('settings-modal').classList.remove('active');
+    }
+    
+    changeTheme() {
+        const theme = document.getElementById('theme-select').value;
+        
+        // Удаляем все классы тем
+        document.body.classList.remove('theme-light', 'theme-dark', 'theme-balanced');
+        
+        // Добавляем выбранную тему
+        if (theme !== 'light') {
+            document.body.classList.add(`theme-${theme}`);
+        }
+        
+        // Сохраняем в localStorage
+        localStorage.setItem('zadachnik_theme', theme);
+        
+        console.log('Theme changed to:', theme);
+    }
+    
+    loadTheme() {
+        const savedTheme = localStorage.getItem('zadachnik_theme') || 'light';
+        if (savedTheme !== 'light') {
+            document.body.classList.add(`theme-${savedTheme}`);
+        }
     }
     
     closeActionModal() {
