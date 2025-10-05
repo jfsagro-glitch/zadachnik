@@ -235,7 +235,7 @@
                                 <!-- Кнопки workflow действий -->
                             </div>
                             <div class="form-buttons">
-                                <button type="button" class="btn btn-secondary" onclick="app.closeTaskModal()">Отмена</button>
+                                <button type="button" class="btn btn-secondary" onclick="app.closeTaskModal()">Закрыть</button>
                                 <button type="submit" class="btn btn-primary" id="btn-save-task">Сохранить</button>
                             </div>
                         </div>
@@ -255,6 +255,9 @@
                     <div class="analytics-content" id="analytics-content">
                         <!-- Аналитические данные -->
                     </div>
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="app.closeAnalyticsModal()">Закрыть</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -272,7 +275,7 @@
                         <textarea id="action-comment" rows="3" required></textarea>
                     </div>
                     <div class="form-actions">
-                        <button class="btn btn-secondary" onclick="app.closeActionModal()">Отмена</button>
+                        <button class="btn btn-secondary" onclick="app.closeActionModal()">Закрыть</button>
                         <button class="btn btn-primary" onclick="app.confirmAction()">Подтвердить</button>
                     </div>
                 </div>
@@ -333,7 +336,7 @@
                     </div>
                     
                     <div class="form-actions">
-                        <button class="btn btn-secondary" onclick="app.closeAssignModal()">Отмена</button>
+                        <button class="btn btn-secondary" onclick="app.closeAssignModal()">Закрыть</button>
                         <button class="btn btn-primary" onclick="app.confirmAssignment()">Распределить</button>
                     </div>
                 </div>

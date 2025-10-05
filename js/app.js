@@ -1058,9 +1058,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Закрытие модальных окон по клику вне их
+// Закрытие модальных окон по клику вне их (но не на содержимое)
 window.onclick = function(event) {
-    if (event.target.classList.contains('modal')) {
+    // Проверяем, что клик именно на фон модального окна, а не на его содержимое
+    if (event.target.classList.contains('modal') && event.target === event.currentTarget) {
         event.target.classList.remove('active');
     }
 };
+
+// Предотвращаем закрытие при клике на содержимое модального окна
+document.addEventListener('DOMContentLoaded', () => {
+    const modalContents = document.querySelectorAll('.modal-content');
+    modalContents.forEach(content => {
+        content.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+    });
+});
