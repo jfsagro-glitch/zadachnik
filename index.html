@@ -138,62 +138,56 @@
                 <div class="modal-body">
                     <form id="task-form" onsubmit="app.saveTask(event)">
                         <input type="hidden" id="task-id">
-                        <input type="hidden" id="task-region-value">
-                        <input type="hidden" id="task-type-value">
-                        <input type="hidden" id="task-priority-value">
                         
-                        <div class="form-group-compact">
-                            <label>Регион:</label>
-                            <div class="button-group" id="region-buttons">
-                                <button type="button" class="btn-choice" data-value="Москва" onclick="app.selectRegion('Москва')">🏛️ Москва</button>
-                                <button type="button" class="btn-choice" data-value="Санкт-Петербург" onclick="app.selectRegion('Санкт-Петербург')">🏛️ СПб</button>
-                                <button type="button" class="btn-choice" data-value="Новосибирск" onclick="app.selectRegion('Новосибирск')">🏛️ НСК</button>
-                                <button type="button" class="btn-choice" data-value="Екатеринбург" onclick="app.selectRegion('Екатеринбург')">🏛️ ЕКБ</button>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group-compact">
-                            <label>Тип задачи:</label>
-                            <div class="button-group" id="type-buttons">
-                                <button type="button" class="btn-choice" data-value="Оценка" onclick="app.selectType('Оценка')">📊 Оценка</button>
-                                <button type="button" class="btn-choice" data-value="Экспертиза" onclick="app.selectType('Экспертиза')">🔍 Экспертиза</button>
-                                <button type="button" class="btn-choice" data-value="Рецензия" onclick="app.selectType('Рецензия')">📝 Рецензия</button>
-                                <button type="button" class="btn-choice" data-value="ПРКК" onclick="app.selectType('ПРКК')">📋 ПРКК</button>
-                                <button type="button" class="btn-choice" data-value="Прочее" onclick="app.selectType('Прочее')">📌 Прочее</button>
-                                <button type="button" class="btn-choice" data-value="Отчетность" onclick="app.selectType('Отчетность')">📈 Отчетность</button>
-                                <button type="button" class="btn-choice" data-value="Подготовка СЗ" onclick="app.selectType('Подготовка СЗ')">📄 СЗ</button>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group-compact">
-                            <label for="task-title">Название:</label>
-                            <input type="text" id="task-title" required placeholder="Краткое название задачи">
-                        </div>
-                        
-                        <div class="form-group-compact">
-                            <label for="task-description">Описание:</label>
-                            <textarea id="task-description" rows="2" placeholder="Подробное описание задачи"></textarea>
-                        </div>
-                        
-                        <div class="form-row-compact">
-                            <div class="form-group-compact">
-                                <label>Приоритет:</label>
-                                <div class="button-group-vertical" id="priority-buttons">
-                                    <button type="button" class="btn-choice btn-priority-low" data-value="low" onclick="app.selectPriority('low')">🟢 Низкий</button>
-                                    <button type="button" class="btn-choice btn-priority-medium" data-value="medium" onclick="app.selectPriority('medium')">🟡 Средний</button>
-                                    <button type="button" class="btn-choice btn-priority-high" data-value="high" onclick="app.selectPriority('high')">🟠 Высокий</button>
-                                    <button type="button" class="btn-choice btn-priority-critical" data-value="critical" onclick="app.selectPriority('critical')">🔴 Критический</button>
-                                </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="task-region">Регион:</label>
+                                <select id="task-region" required>
+                                    <option value="Москва">Москва</option>
+                                    <option value="Санкт-Петербург">Санкт-Петербург</option>
+                                    <option value="Новосибирск">Новосибирск</option>
+                                    <option value="Екатеринбург">Екатеринбург</option>
+                                </select>
                             </div>
                             
-                            <div class="form-group-compact">
-                                <label for="task-deadline">Срок:</label>
+                            <div class="form-group">
+                                <label for="task-type">Тип задачи:</label>
+                                <select id="task-type" required>
+                                    <option value="Оценка">Оценка</option>
+                                    <option value="Экспертиза">Экспертиза</option>
+                                    <option value="Рецензия">Рецензия</option>
+                                    <option value="ПРКК">ПРКК</option>
+                                    <option value="Прочее">Прочее</option>
+                                    <option value="Отчетность">Отчетность</option>
+                                    <option value="Подготовка СЗ">Подготовка СЗ</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="task-title">Название задачи:</label>
+                            <input type="text" id="task-title" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="task-description">Описание:</label>
+                            <textarea id="task-description" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="task-priority">Приоритет:</label>
+                                <select id="task-priority" required>
+                                    <option value="low">Низкий</option>
+                                    <option value="medium">Средний</option>
+                                    <option value="high">Высокий</option>
+                                    <option value="critical">Критический</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="task-deadline">Срок выполнения:</label>
                                 <input type="date" id="task-deadline" required>
-                                <div class="quick-dates">
-                                    <button type="button" class="btn-quick-date" onclick="app.setQuickDate(3)">+3 дня</button>
-                                    <button type="button" class="btn-quick-date" onclick="app.setQuickDate(7)">+7 дней</button>
-                                    <button type="button" class="btn-quick-date" onclick="app.setQuickDate(14)">+14 дней</button>
-                                </div>
                             </div>
                         </div>
                         
