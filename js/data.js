@@ -21,25 +21,7 @@ const DemoData = {
             { id: 'mgr3', email: 'manager.nsk@company.com', name: 'Дмитрий Директор', role: 'manager', region: 'Новосибирск' },
             { id: 'mgr4', email: 'manager.ekb@company.com', name: 'Ольга Управляющая', role: 'manager', region: 'Екатеринбург' }
         ],
-        employee: [
-            // Москва
-            { id: 'emp1', email: 'emp1.msk@company.com', name: 'Алексей Работников', role: 'employee', region: 'Москва' },
-            { id: 'emp2', email: 'emp2.msk@company.com', name: 'Мария Исполнитель', role: 'employee', region: 'Москва' },
-            { id: 'emp3', email: 'emp3.msk@company.com', name: 'Николай Специалист', role: 'employee', region: 'Москва' },
-            { id: 'emp4', email: 'emp4.msk@company.com', name: 'Татьяна Эксперт', role: 'employee', region: 'Москва' },
-            // Санкт-Петербург
-            { id: 'emp5', email: 'emp1.spb@company.com', name: 'Владимир Петербургский', role: 'employee', region: 'Санкт-Петербург' },
-            { id: 'emp6', email: 'emp2.spb@company.com', name: 'Светлана Невская', role: 'employee', region: 'Санкт-Петербург' },
-            { id: 'emp7', email: 'emp3.spb@company.com', name: 'Игорь Северный', role: 'employee', region: 'Санкт-Петербург' },
-            // Новосибирск
-            { id: 'emp8', email: 'emp1.nsk@company.com', name: 'Павел Сибиряк', role: 'employee', region: 'Новосибирск' },
-            { id: 'emp9', email: 'emp2.nsk@company.com', name: 'Наталья Новосибирская', role: 'employee', region: 'Новосибирск' },
-            { id: 'emp10', email: 'emp3.nsk@company.com', name: 'Андрей Обской', role: 'employee', region: 'Новосибирск' },
-            // Екатеринбург
-            { id: 'emp11', email: 'emp1.ekb@company.com', name: 'Максим Уральский', role: 'employee', region: 'Екатеринбург' },
-            { id: 'emp12', email: 'emp2.ekb@company.com', name: 'Юлия Екатеринбургская', role: 'employee', region: 'Екатеринбург' },
-            { id: 'emp13', email: 'emp3.ekb@company.com', name: 'Роман Исетский', role: 'employee', region: 'Екатеринбург' }
-        ],
+        employee: generateEmployees(),
         superuser: [
             { id: 'super1', email: 'admin@company.com', name: 'Администратор Системы', role: 'superuser', region: null }
         ]
@@ -299,6 +281,56 @@ function getDateTimeString(daysFromNow) {
     const date = new Date();
     date.setDate(date.getDate() + daysFromNow);
     return date.toISOString();
+}
+
+// Генерация сотрудников (по 30 на каждый регион)
+function generateEmployees() {
+    const employees = [];
+    const regions = [
+        { code: 'msk', name: 'Москва' },
+        { code: 'spb', name: 'Санкт-Петербург' },
+        { code: 'nsk', name: 'Новосибирск' },
+        { code: 'ekb', name: 'Екатеринбург' }
+    ];
+    
+    const firstNames = [
+        'Александр', 'Алексей', 'Андрей', 'Антон', 'Артем', 'Борис', 'Вадим', 'Валерий',
+        'Виктор', 'Владимир', 'Дмитрий', 'Евгений', 'Игорь', 'Иван', 'Кирилл', 'Максим',
+        'Михаил', 'Николай', 'Олег', 'Павел', 'Петр', 'Роман', 'Сергей', 'Станислав',
+        'Анна', 'Валентина', 'Виктория', 'Галина', 'Дарья', 'Екатерина', 'Елена', 'Ирина',
+        'Ксения', 'Людмила', 'Марина', 'Мария', 'Наталья', 'Ольга', 'Светлана', 'Татьяна',
+        'Юлия', 'Яна', 'Анастасия', 'Вера', 'Надежда', 'Любовь', 'Полина', 'София'
+    ];
+    
+    const lastNames = [
+        'Иванов', 'Петров', 'Сидоров', 'Смирнов', 'Кузнецов', 'Попов', 'Васильев', 'Соколов',
+        'Михайлов', 'Новиков', 'Федоров', 'Морозов', 'Волков', 'Алексеев', 'Лебедев', 'Семенов',
+        'Егоров', 'Павлов', 'Козлов', 'Степанов', 'Николаев', 'Орлов', 'Андреев', 'Макаров',
+        'Никитин', 'Захаров', 'Зайцев', 'Соловьев', 'Борисов', 'Яковлев', 'Григорьев', 'Романов',
+        'Воробьев', 'Сергеев', 'Терентьев', 'Фролов', 'Данилов', 'Богданов', 'Тимофеев', 'Крылов'
+    ];
+    
+    let empCounter = 1;
+    
+    regions.forEach(region => {
+        for (let i = 1; i <= 30; i++) {
+            const firstName = firstNames[(empCounter + i) % firstNames.length];
+            const lastName = lastNames[(empCounter + i * 2) % lastNames.length];
+            const fullName = `${firstName} ${lastName}`;
+            
+            employees.push({
+                id: `emp${empCounter}`,
+                email: `emp${i}.${region.code}@company.com`,
+                name: fullName,
+                role: 'employee',
+                region: region.name
+            });
+            
+            empCounter++;
+        }
+    });
+    
+    return employees;
 }
 
 function generateAdditionalTasks(startId, endId) {
