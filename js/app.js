@@ -48,6 +48,11 @@ class ZadachnikApp {
         if (!usersData && window.DemoData) {
             this.storage.saveUsers(this.users);
         }
+        
+        console.log('Loaded data:');
+        console.log('Tasks:', this.tasks.length);
+        console.log('Users structure:', this.users);
+        console.log('Users.employee:', this.users.employee ? this.users.employee.length : 'undefined');
     }
     
     setupUI() {
@@ -729,7 +734,12 @@ class ZadachnikApp {
     
     renderEmployeesSelect() {
         const select = document.getElementById('assign-employee-select');
-        if (!select) return;
+        if (!select) {
+            console.error('assign-employee-select not found!');
+            return;
+        }
+        
+        console.log('renderEmployeesSelect - allEmployees:', this.allEmployees.length);
         
         const searchText = document.getElementById('employee-search').value.toLowerCase();
         
@@ -738,11 +748,20 @@ class ZadachnikApp {
             emp.email.toLowerCase().includes(searchText)
         );
         
+        console.log('Filtered employees for select:', filteredEmployees.length);
+        
+        if (filteredEmployees.length === 0) {
+            select.innerHTML = '<option value="">Нет доступных сотрудников</option>';
+            return;
+        }
+        
         select.innerHTML = filteredEmployees.map(emp => {
             const statusIcon = emp.available ? '🟢' : '🔴';
             const workloadText = `${emp.workload}%`;
             return `<option value="${emp.email}">${statusIcon} ${emp.name} - Загрузка: ${workloadText}</option>`;
         }).join('');
+        
+        console.log('Select populated with', filteredEmployees.length, 'employees');
     }
     
     filterEmployeesInSelect() {
