@@ -1,110 +1,127 @@
 /**
- * ЗАДАЧНИК - Компактная табличная система управления задачами
+ * ЗАДАЧНИК - Главное приложение с ролевой моделью и workflow
  */
 
 class ZadachnikApp {
     constructor() {
+        // Инициализация менеджеров
+        this.storage = new StorageManager();
+        this.auth = new AuthManager();
+        this.workflow = new WorkflowManager(this.auth);
+        this.analytics = new AnalyticsManager(this.auth);
+        
+        // Состояние приложения
         this.tasks = [];
-        this.users = [];
+        this.users = {};
         this.filteredTasks = [];
         this.sortColumn = 'id';
         this.sortDirection = 'asc';
-        this.currentTaskId = null;
+        this.currentTask = null;
+        this.pendingAction = null;
         
         this.init();
     }
     
     init() {
-        // Загружаем данные из localStorage или используем демо-данные
+        // Инициализация демо-данных
+        this.storage.initDemoData();
+        
+        // Загрузка данных
         this.loadData();
         
-        // Заполняем фильтр исполнителей
-        this.populateAssigneeFilter();
+        // Настройка UI
+        this.setupUI();
         
-        // Рендерим таблицу
+        // Применение фильтров и рендеринг
         this.applyFilters();
-        
-        // Заполняем select исполнителей в форме
-        this.populateAssigneeSelect();
     }
     
     loadData() {
-        const savedTasks = localStorage.getItem('zadachnik_tasks');
-        const savedUsers = localStorage.getItem('zadachnik_users');
-        
-        if (savedTasks && savedUsers) {
-            this.tasks = JSON.parse(savedTasks);
-            this.users = JSON.parse(savedUsers);
-        } else {
-            // Используем демо-данные
-            this.tasks = DemoData.tasks;
-            this.users = DemoData.users;
-            this.saveData();
+        this.tasks = this.storage.getTasks();
+        const usersData = this.storage.getUsers();
+        this.users = usersData || (window.DemoData ? DemoData.users : {});
+        if (!usersData && window.DemoData) {
+            this.storage.saveUsers(this.users);
         }
     }
     
-    saveData() {
-        localStorage.setItem('zadachnik_tasks', JSON.stringify(this.tasks));
-        localStorage.setItem('zadachnik_users', JSON.stringify(this.users));
+    setupUI() {
+        this.updateUserInfo();
+        this.populateFilters();
+        this.updateUIForRole();
     }
     
-    populateAssigneeFilter() {
-        const select = document.getElementById('filter-assignee');
-        select.innerHTML = '<option value="">Все</option>';
-        
-        const uniqueAssignees = [...new Set(this.tasks.map(t => t.assignee))];
-        uniqueAssignees.forEach(assignee => {
-            const option = document.createElement('option');
-            option.value = assignee;
-            option.textContent = assignee;
-            select.appendChild(option);
+    updateUserInfo() {
+        const user = this.auth.getCurrentUser();
+        document.getElementById('current-user-name').textContent = user.name;
+        document.getElementById('role-select').value = user.role;
+        if (user.region) {
+            document.getElementById('region-select').value = user.region;
+            document.getElementById('region-select').style.display = 'inline-block';
+        } else {
+            document.getElementById('region-select').style.display = 'none';
+        }
+    }
+    
+    updateUIForRole() {
+        document.getElementById('btn-create-task').style.display = 
+            this.auth.hasPermission('createTask') ? 'inline-block' : 'none';
+        document.getElementById('btn-analytics').style.display = 
+            (this.auth.hasPermission('viewAnalytics') || this.auth.hasPermission('viewAllAnalytics')) ? 'inline-block' : 'none';
+        document.getElementById('filter-region-group').style.display = 
+            this.auth.getCurrentRole() === 'superuser' ? 'block' : 'none';
+    }
+    
+    populateFilters() {
+        const filterRegion = document.getElementById('filter-region');
+        filterRegion.innerHTML = '<option value="">Все</option>';
+        this.auth.getAllRegions().forEach(region => {
+            filterRegion.innerHTML += `<option value="${region}">${region}</option>`;
         });
     }
     
-    populateAssigneeSelect() {
-        const select = document.getElementById('task-assignee');
-        select.innerHTML = '<option value="">Не назначен</option>';
-        
-        this.users.forEach(user => {
-            const option = document.createElement('option');
-            option.value = user.name;
-            option.textContent = user.name;
-            select.appendChild(option);
-        });
+    switchRole() {
+        const role = document.getElementById('role-select').value;
+        const region = document.getElementById('region-select').value;
+        this.auth.switchRole(role, region);
+        this.updateUserInfo();
+        this.updateUIForRole();
+        this.applyFilters();
+    }
+    
+    switchRegion() {
+        const region = document.getElementById('region-select').value;
+        const user = this.auth.getCurrentUser();
+        user.region = region;
+        this.auth.saveCurrentUser();
+        this.applyFilters();
     }
     
     applyFilters() {
         const searchText = document.getElementById('search-input').value.toLowerCase();
+        const filterRegion = document.getElementById('filter-region').value;
+        const filterType = document.getElementById('filter-type').value;
         const filterStatus = document.getElementById('filter-status').value;
         const filterPriority = document.getElementById('filter-priority').value;
-        const filterAssignee = document.getElementById('filter-assignee').value;
         
         this.filteredTasks = this.tasks.filter(task => {
-            // Поиск по всем полям
+            if (!this.auth.canViewTask(task)) return false;
+            
             const matchesSearch = !searchText || 
                 task.id.toLowerCase().includes(searchText) ||
                 task.title.toLowerCase().includes(searchText) ||
-                task.assignee.toLowerCase().includes(searchText);
+                (task.currentAssignee && task.currentAssignee.toLowerCase().includes(searchText));
             
-            // Фильтр по статусу
+            const matchesRegion = !filterRegion || task.region === filterRegion;
+            const matchesType = !filterType || task.type === filterType;
             const matchesStatus = !filterStatus || task.status === filterStatus;
-            
-            // Фильтр по приоритету
             const matchesPriority = !filterPriority || task.priority === filterPriority;
             
-            // Фильтр по исполнителю
-            const matchesAssignee = !filterAssignee || task.assignee === filterAssignee;
-            
-            return matchesSearch && matchesStatus && matchesPriority && matchesAssignee;
+            return matchesSearch && matchesRegion && matchesType && matchesStatus && matchesPriority;
         });
         
-        // Сортировка
         this.sortTasks();
-        
-        // Рендерим таблицу
         this.renderTable();
-        
-        // Обновляем счетчики
         this.updateStats();
     }
     
@@ -115,7 +132,6 @@ class ZadachnikApp {
             this.sortColumn = column;
             this.sortDirection = 'asc';
         }
-        
         this.applyFilters();
     }
     
@@ -123,140 +139,19 @@ class ZadachnikApp {
         this.filteredTasks.sort((a, b) => {
             let aVal = a[this.sortColumn];
             let bVal = b[this.sortColumn];
-            
-            // Обработка разных типов данных
-            if (this.sortColumn === 'workload') {
-                aVal = parseInt(aVal);
-                bVal = parseInt(bVal);
-            }
-            
             if (aVal < bVal) return this.sortDirection === 'asc' ? -1 : 1;
             if (aVal > bVal) return this.sortDirection === 'asc' ? 1 : -1;
             return 0;
         });
     }
     
-    renderTable() {
-        const tbody = document.getElementById('tasks-tbody');
-        tbody.innerHTML = '';
-        
-        this.filteredTasks.forEach(task => {
-            const row = this.createTableRow(task);
-            tbody.appendChild(row);
-        });
-    }
-    
-    createTableRow(task) {
-        const tr = document.createElement('tr');
-        
-        // ID
-        const tdId = document.createElement('td');
-        tdId.textContent = task.id;
-        tr.appendChild(tdId);
-        
-        // Название
-        const tdTitle = document.createElement('td');
-        tdTitle.textContent = task.title;
-        tdTitle.title = task.title;
-        tr.appendChild(tdTitle);
-        
-        // Статус (с быстрым изменением)
-        const tdStatus = document.createElement('td');
-        const statusSelect = document.createElement('select');
-        statusSelect.className = 'status-select';
-        statusSelect.innerHTML = `
-            <option value="new" ${task.status === 'new' ? 'selected' : ''}>Новая</option>
-            <option value="in-progress" ${task.status === 'in-progress' ? 'selected' : ''}>В работе</option>
-            <option value="review" ${task.status === 'review' ? 'selected' : ''}>На проверке</option>
-            <option value="done" ${task.status === 'done' ? 'selected' : ''}>Завершена</option>
-            <option value="paused" ${task.status === 'paused' ? 'selected' : ''}>Приостановлена</option>
-        `;
-        statusSelect.onchange = (e) => this.quickUpdateStatus(task.id, e.target.value);
-        tdStatus.appendChild(statusSelect);
-        tr.appendChild(tdStatus);
-        
-        // Приоритет
-        const tdPriority = document.createElement('td');
-        tdPriority.innerHTML = `<span class="priority-badge priority-${task.priority}">${this.getPriorityText(task.priority)}</span>`;
-        tr.appendChild(tdPriority);
-        
-        // Исполнитель
-        const tdAssignee = document.createElement('td');
-        tdAssignee.textContent = task.assignee;
-        tr.appendChild(tdAssignee);
-        
-        // Срок
-        const tdDeadline = document.createElement('td');
-        const deadlineClass = this.getDeadlineClass(task.deadline);
-        tdDeadline.className = deadlineClass;
-        tdDeadline.textContent = this.formatDate(task.deadline);
-        tr.appendChild(tdDeadline);
-        
-        // Загрузка
-        const tdWorkload = document.createElement('td');
-        tdWorkload.innerHTML = this.createWorkloadBar(task.workload);
-        tr.appendChild(tdWorkload);
-        
-        // Действия
-        const tdActions = document.createElement('td');
-        tdActions.innerHTML = `
-            <div class="actions-cell">
-                <button class="btn btn-sm btn-primary" onclick="app.editTask('${task.id}')">✏️</button>
-                <button class="btn btn-sm btn-danger" onclick="app.deleteTask('${task.id}')">🗑️</button>
-            </div>
-        `;
-        tr.appendChild(tdActions);
-        
-        return tr;
-    }
-    
-    createWorkloadBar(workload) {
-        let fillClass = '';
-        if (workload >= 80) fillClass = 'critical';
-        else if (workload >= 60) fillClass = 'high';
-        
-        return `
-            <div class="workload-bar">
-                <div class="workload-progress">
-                    <div class="workload-fill ${fillClass}" style="width: ${workload}%"></div>
-                </div>
-                <span class="workload-text">${workload}%</span>
-            </div>
-        `;
-    }
-    
-    getPriorityText(priority) {
-        const map = {
-            'low': 'Низкий',
-            'medium': 'Средний',
-            'high': 'Высокий',
-            'critical': 'Критический'
-        };
-        return map[priority] || priority;
-    }
-    
-    getDeadlineClass(deadline) {
-        const today = new Date();
-        const deadlineDate = new Date(deadline);
-        const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
-        
-        if (diffDays < 0) return 'deadline-danger';
-        if (diffDays <= 3) return 'deadline-warning';
-        return 'deadline-ok';
-    }
-    
-    formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' });
-    }
-    
-    quickUpdateStatus(taskId, newStatus) {
-        const task = this.tasks.find(t => t.id === taskId);
-        if (task) {
-            task.status = newStatus;
-            this.saveData();
-            this.applyFilters();
-        }
+    resetFilters() {
+        document.getElementById('search-input').value = '';
+        document.getElementById('filter-region').value = '';
+        document.getElementById('filter-type').value = '';
+        document.getElementById('filter-status').value = '';
+        document.getElementById('filter-priority').value = '';
+        this.applyFilters();
     }
     
     updateStats() {
@@ -264,45 +159,284 @@ class ZadachnikApp {
         document.getElementById('total-count').textContent = this.tasks.length;
     }
     
-    resetFilters() {
-        document.getElementById('search-input').value = '';
-        document.getElementById('filter-status').value = '';
-        document.getElementById('filter-priority').value = '';
-        document.getElementById('filter-assignee').value = '';
-        this.applyFilters();
+    renderTable() {
+        const tbody = document.getElementById('tasks-tbody');
+        tbody.innerHTML = '';
+        this.filteredTasks.forEach(task => tbody.appendChild(this.createTableRow(task)));
     }
     
-    addTask() {
-        this.currentTaskId = null;
+    createTableRow(task) {
+        const tr = document.createElement('tr');
+        const statusInfo = this.workflow.getStatusInfo(task.status);
+        
+        tr.innerHTML = `
+            <td onclick="app.openTaskCard('${task.id}')" style="cursor:pointer">${task.id}</td>
+            <td>${task.region}</td>
+            <td>${task.type}</td>
+            <td onclick="app.openTaskCard('${task.id}')" style="cursor:pointer" title="${task.title}">${task.title}</td>
+            <td><span class="priority-badge priority-${task.priority}">${this.getPriorityText(task.priority)}</span></td>
+            <td><span class="${this.getDeadlineClass(task.dueDate)}">${this.formatDate(task.dueDate)}</span></td>
+            <td><span class="status-badge status-${task.status}">${statusInfo.label}</span></td>
+            <td>${this.getAssigneeName(task.currentAssignee) || '-'}</td>
+            <td>${this.renderActions(task)}</td>
+        `;
+        return tr;
+    }
+    
+    renderActions(task) {
+        const actions = this.auth.getAvailableActions(task);
+        return actions.slice(0, 3).map(action => 
+            `<button class="btn btn-sm btn-secondary" onclick="app.handleAction('${task.id}', '${action.id}')" title="${action.label}">${action.icon}</button>`
+        ).join(' ');
+    }
+    
+    getPriorityText(priority) {
+        return { low: 'Низкий', medium: 'Средний', high: 'Высокий', critical: 'Критический' }[priority] || priority;
+    }
+    
+    getDeadlineClass(deadline) {
+        const diffDays = Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24));
+        if (diffDays < 0) return 'deadline-danger';
+        if (diffDays <= 3) return 'deadline-warning';
+        return 'deadline-ok';
+    }
+    
+    formatDate(dateString) {
+        return new Date(dateString).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' });
+    }
+    
+    formatDateTime(dateString) {
+        return new Date(dateString).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+    }
+    
+    getAssigneeName(email) {
+        if (!email) return null;
+        for (const role in this.users) {
+            const user = this.users[role].find(u => u.email === email);
+            if (user) return user.name;
+        }
+        return email;
+    }
+    
+    createNewTask() {
+        this.currentTask = null;
         document.getElementById('modal-title').textContent = 'Новая задача';
         document.getElementById('task-form').reset();
-        document.getElementById('task-id').value = '';
+        const user = this.auth.getCurrentUser();
+        if (user.region) document.getElementById('task-region').value = user.region;
         
-        // Генерируем новый ID
-        const maxId = this.tasks.length > 0 
-            ? Math.max(...this.tasks.map(t => parseInt(t.id.split('-')[1]))) 
-            : 0;
-        document.getElementById('task-id').value = `T-${String(maxId + 1).padStart(3, '0')}`;
-        
+        document.getElementById('documents-list').innerHTML = '<p style="color:#999;font-size:12px;">Нет документов</p>';
+        document.getElementById('comments-list').innerHTML = '<p style="color:#999;font-size:12px;">Нет комментариев</p>';
+        document.getElementById('history-list').innerHTML = '<p style="color:#999;font-size:12px;">История пуста</p>';
+        document.getElementById('assignees-group').style.display = 'none';
+        document.getElementById('workflow-actions').innerHTML = '';
         document.getElementById('task-modal').classList.add('active');
     }
     
-    editTask(taskId) {
+    openTaskCard(taskId) {
         const task = this.tasks.find(t => t.id === taskId);
         if (!task) return;
         
-        this.currentTaskId = taskId;
-        document.getElementById('modal-title').textContent = 'Редактировать задачу';
-        
+        this.currentTask = task;
+        document.getElementById('modal-title').textContent = `Задача ${task.id}`;
         document.getElementById('task-id').value = task.id;
+        document.getElementById('task-region').value = task.region;
+        document.getElementById('task-type').value = task.type;
         document.getElementById('task-title').value = task.title;
-        document.getElementById('task-status').value = task.status;
+        document.getElementById('task-description').value = task.description || '';
         document.getElementById('task-priority').value = task.priority;
-        document.getElementById('task-assignee').value = task.assignee;
-        document.getElementById('task-deadline').value = task.deadline;
-        document.getElementById('task-workload').value = task.workload;
+        document.getElementById('task-deadline').value = task.dueDate;
         
+        const canEdit = this.auth.canEditTask(task);
+        ['task-title', 'task-description', 'task-priority', 'task-deadline'].forEach(id => {
+            document.getElementById(id).disabled = !canEdit;
+        });
+        document.getElementById('btn-save-task').style.display = canEdit ? 'inline-block' : 'none';
+        
+        this.renderAssignees(task);
+        this.renderDocuments(task);
+        this.renderComments(task);
+        this.renderHistory(task);
+        this.renderWorkflowActions(task);
         document.getElementById('task-modal').classList.add('active');
+    }
+    
+    renderAssignees(task) {
+        const assigneesGroup = document.getElementById('assignees-group');
+        const assigneesList = document.getElementById('assignees-list');
+        
+        if (this.auth.hasPermission('assignTasks')) {
+            assigneesGroup.style.display = 'block';
+            const employees = this.users.employee.filter(e => e.region === task.region);
+            assigneesList.innerHTML = employees.map(emp => `
+                <div class="assignee-item">
+                    <input type="checkbox" id="emp-${emp.id}" value="${emp.email}" ${task.assignedTo && task.assignedTo.includes(emp.email) ? 'checked' : ''}>
+                    <label for="emp-${emp.id}">${emp.name}</label>
+                </div>
+            `).join('');
+        } else {
+            assigneesGroup.style.display = 'none';
+        }
+    }
+    
+    renderDocuments(task) {
+        const docsList = document.getElementById('documents-list');
+        if (task.documents && task.documents.length > 0) {
+            docsList.innerHTML = task.documents.map(doc => `
+                <div class="document-item">
+                    <div class="document-info">
+                        <div class="document-name">📎 ${doc.name}</div>
+                        <div class="document-meta">Загрузил: ${doc.uploadedByName} • ${this.formatDateTime(doc.uploadedAt)}</div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            docsList.innerHTML = '<p style="color:#999;font-size:12px;">Нет документов</p>';
+        }
+    }
+    
+    renderComments(task) {
+        const commentsList = document.getElementById('comments-list');
+        if (task.comments && task.comments.length > 0) {
+            commentsList.innerHTML = task.comments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">${comment.author}</span>
+                        <span class="comment-date">${this.formatDateTime(comment.createdAt)}</span>
+                    </div>
+                    <div class="comment-text">${comment.text}</div>
+                </div>
+            `).join('');
+        } else {
+            commentsList.innerHTML = '<p style="color:#999;font-size:12px;">Нет комментариев</p>';
+        }
+    }
+    
+    renderHistory(task) {
+        const historyList = document.getElementById('history-list');
+        if (task.history && task.history.length > 0) {
+            historyList.innerHTML = task.history.map(item => `
+                <div class="history-item action-${item.status}">
+                    <div class="history-header">
+                        <span class="history-user">${item.user}</span>
+                        <span class="history-date">${this.formatDateTime(item.date)}</span>
+                    </div>
+                    <div class="history-action">${item.action}</div>
+                    ${item.comment ? `<div class="history-comment">${item.comment}</div>` : ''}
+                </div>
+            `).join('');
+        } else {
+            historyList.innerHTML = '<p style="color:#999;font-size:12px;">История пуста</p>';
+        }
+    }
+    
+    renderWorkflowActions(task) {
+        const workflowActions = document.getElementById('workflow-actions');
+        const actions = this.auth.getAvailableActions(task);
+        
+        if (actions.length > 0) {
+            workflowActions.innerHTML = actions.map(action => {
+                const btnClass = `workflow-btn workflow-btn-${action.id}`;
+                return `<button class="${btnClass}" onclick="app.handleAction('${task.id}', '${action.id}')">${action.label}</button>`;
+            }).join('');
+        } else {
+            workflowActions.innerHTML = '';
+        }
+    }
+    
+    handleAction(taskId, actionId) {
+        const task = this.tasks.find(t => t.id === taskId);
+        if (!task) return;
+        
+        const needsComment = ['pause', 'rework', 'return'].includes(actionId);
+        
+        if (needsComment) {
+            this.pendingAction = { taskId, actionId };
+            document.getElementById('action-modal-title').textContent = this.getActionTitle(actionId);
+            document.getElementById('action-comment').value = '';
+            document.getElementById('action-modal').classList.add('active');
+        } else {
+            this.executeAction(taskId, actionId, '');
+        }
+    }
+    
+    getActionTitle(actionId) {
+        const titles = {
+            pause: 'Постановка на паузу',
+            rework: 'Отправка на доработку',
+            return: 'Возврат задачи',
+            approve: 'Согласование задачи',
+            assign: 'Распределение задачи'
+        };
+        return titles[actionId] || 'Действие';
+    }
+    
+    confirmAction() {
+        if (!this.pendingAction) return;
+        const comment = document.getElementById('action-comment').value;
+        if (!comment.trim()) {
+            alert('Требуется комментарий');
+            return;
+        }
+        this.executeAction(this.pendingAction.taskId, this.pendingAction.actionId, comment);
+        this.closeActionModal();
+    }
+    
+    executeAction(taskId, actionId, comment) {
+        const task = this.tasks.find(t => t.id === taskId);
+        if (!task) return;
+        
+        try {
+            let updatedTask;
+            switch(actionId) {
+                case 'accept':
+                    updatedTask = this.workflow.acceptTask(task, comment);
+                    break;
+                case 'pause':
+                    updatedTask = this.workflow.pauseTask(task, comment);
+                    break;
+                case 'resume':
+                    updatedTask = this.workflow.resumeTask(task, comment);
+                    break;
+                case 'rework':
+                    updatedTask = this.workflow.sendToRework(task, comment);
+                    break;
+                case 'returnToWork':
+                    updatedTask = this.workflow.returnToWork(task, comment);
+                    break;
+                case 'approval':
+                    updatedTask = this.workflow.sendToApproval(task, comment);
+                    break;
+                case 'approve':
+                    updatedTask = this.workflow.approveTask(task, comment);
+                    break;
+                case 'return':
+                    updatedTask = this.workflow.returnToEmployee(task, comment);
+                    break;
+                case 'assign':
+                    const selectedEmployees = Array.from(document.querySelectorAll('#assignees-list input:checked')).map(cb => cb.value);
+                    if (selectedEmployees.length === 0) {
+                        alert('Выберите исполнителей');
+                        return;
+                    }
+                    updatedTask = this.workflow.assignTask(task, selectedEmployees, comment);
+                    break;
+                default:
+                    return;
+            }
+            
+            const index = this.tasks.findIndex(t => t.id === taskId);
+            if (index !== -1) {
+                this.tasks[index] = updatedTask;
+                this.storage.saveTasks(this.tasks);
+                this.applyFilters();
+                if (this.currentTask && this.currentTask.id === taskId) {
+                    this.openTaskCard(taskId);
+                }
+            }
+        } catch (error) {
+            alert('Ошибка: ' + error.message);
+        }
     }
     
     saveTask(event) {
@@ -310,105 +444,161 @@ class ZadachnikApp {
         
         const taskData = {
             id: document.getElementById('task-id').value,
+            region: document.getElementById('task-region').value,
+            type: document.getElementById('task-type').value,
             title: document.getElementById('task-title').value,
-            status: document.getElementById('task-status').value,
+            description: document.getElementById('task-description').value,
             priority: document.getElementById('task-priority').value,
-            assignee: document.getElementById('task-assignee').value,
-            deadline: document.getElementById('task-deadline').value,
-            workload: parseInt(document.getElementById('task-workload').value)
+            dueDate: document.getElementById('task-deadline').value
         };
         
-        if (this.currentTaskId) {
-            // Обновляем существующую задачу
-            const index = this.tasks.findIndex(t => t.id === this.currentTaskId);
+        if (this.currentTask) {
+            // Обновление существующей задачи
+            Object.assign(this.currentTask, taskData);
+            this.currentTask.updatedAt = new Date().toISOString();
+            const index = this.tasks.findIndex(t => t.id === this.currentTask.id);
             if (index !== -1) {
-                this.tasks[index] = taskData;
+                this.tasks[index] = this.currentTask;
             }
         } else {
-            // Добавляем новую задачу
-            this.tasks.push(taskData);
+            // Создание новой задачи
+            const newTask = this.workflow.createTask(taskData);
+            this.tasks.push(newTask);
         }
         
-        this.saveData();
-        this.closeModal();
+        this.storage.saveTasks(this.tasks);
+        this.closeTaskModal();
         this.applyFilters();
-        this.populateAssigneeFilter();
     }
     
-    deleteTask(taskId) {
-        if (confirm('Удалить задачу?')) {
-            this.tasks = this.tasks.filter(t => t.id !== taskId);
-            this.saveData();
-            this.applyFilters();
+    addComment() {
+        const commentText = document.getElementById('new-comment').value.trim();
+        if (!commentText || !this.currentTask) return;
+        
+        this.workflow.addComment(this.currentTask, commentText);
+        const index = this.tasks.findIndex(t => t.id === this.currentTask.id);
+        if (index !== -1) {
+            this.tasks[index] = this.currentTask;
+            this.storage.saveTasks(this.tasks);
         }
+        
+        document.getElementById('new-comment').value = '';
+        this.renderComments(this.currentTask);
+        this.renderHistory(this.currentTask);
     }
     
-    closeModal() {
+    attachDocument() {
+        document.getElementById('file-input').click();
+    }
+    
+    handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file || !this.currentTask) return;
+        
+        const document = {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            url: '#'
+        };
+        
+        this.workflow.attachDocument(this.currentTask, document);
+        const index = this.tasks.findIndex(t => t.id === this.currentTask.id);
+        if (index !== -1) {
+            this.tasks[index] = this.currentTask;
+            this.storage.saveTasks(this.tasks);
+        }
+        
+        this.renderDocuments(this.currentTask);
+        this.renderHistory(this.currentTask);
+    }
+    
+    showAnalytics() {
+        const user = this.auth.getCurrentUser();
+        const region = user.role === 'superuser' ? null : user.region;
+        const employees = region ? this.users.employee.filter(e => e.region === region) : this.users.employee;
+        
+        const analyticsData = this.analytics.exportAnalytics(this.tasks, employees, region);
+        
+        const content = document.getElementById('analytics-content');
+        content.innerHTML = `
+            <div class="analytics-section">
+                <h3>KPI Показатели</h3>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Процент выполнения</div>
+                        <div class="kpi-value">${analyticsData.kpi.completionRate}%</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Выполнено в срок</div>
+                        <div class="kpi-value">${analyticsData.kpi.onTimeRate}%</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Качество</div>
+                        <div class="kpi-value">${analyticsData.kpi.qualityScore}%</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Производительность</div>
+                        <div class="kpi-value">${analyticsData.kpi.productivity}%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analytics-section">
+                <h3>Статистика по сотрудникам</h3>
+                <div class="employee-stats-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Сотрудник</th>
+                                <th>Всего задач</th>
+                                <th>Завершено</th>
+                                <th>В работе</th>
+                                <th>Загрузка</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.values(analyticsData.employees).map(emp => `
+                                <tr>
+                                    <td>${emp.name}</td>
+                                    <td>${emp.totalTasks}</td>
+                                    <td>${emp.completed}</td>
+                                    <td>${emp.inProgress}</td>
+                                    <td>
+                                        <div class="workload-indicator">
+                                            <div class="workload-fill ${emp.workload > 70 ? 'high' : emp.workload > 40 ? 'medium' : ''}" style="width: ${emp.workload}%"></div>
+                                        </div>
+                                        ${emp.workload}%
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('analytics-modal').classList.add('active');
+    }
+    
+    closeTaskModal() {
         document.getElementById('task-modal').classList.remove('active');
     }
     
-    showFreeHands() {
-        const modal = document.getElementById('free-hands-modal');
-        const content = document.getElementById('free-hands-content');
-        
-        // Рассчитываем загрузку каждого исполнителя
-        const workloadByUser = {};
-        this.tasks.forEach(task => {
-            if (task.status !== 'done' && task.assignee) {
-                if (!workloadByUser[task.assignee]) {
-                    workloadByUser[task.assignee] = 0;
-                }
-                workloadByUser[task.assignee] += task.workload;
-            }
-        });
-        
-        // Находим свободных исполнителей (загрузка < 100%)
-        const freeUsers = this.users.filter(user => {
-            const workload = workloadByUser[user.name] || 0;
-            return workload < 100;
-        }).map(user => ({
-            ...user,
-            workload: workloadByUser[user.name] || 0,
-            available: 100 - (workloadByUser[user.name] || 0)
-        })).sort((a, b) => b.available - a.available);
-        
-        if (freeUsers.length === 0) {
-            content.innerHTML = '<div class="free-hands-list"><p>Нет свободных исполнителей</p></div>';
-        } else {
-            content.innerHTML = `
-                <div class="free-hands-list">
-                    ${freeUsers.map(user => `
-                        <div class="free-hand-item">
-                            <div class="user-info">
-                                <div class="user-name">${user.name}</div>
-                                <div class="user-role">Исполнитель</div>
-                            </div>
-                            <div class="user-workload">
-                                Свободно: ${user.available}%
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-        
-        modal.classList.add('active');
+    closeAnalyticsModal() {
+        document.getElementById('analytics-modal').classList.remove('active');
     }
     
-    closeFreeHandsModal() {
-        document.getElementById('free-hands-modal').classList.remove('active');
+    closeActionModal() {
+        document.getElementById('action-modal').classList.remove('active');
+        this.pendingAction = null;
     }
     
     exportToCSV() {
-        const headers = ['ID', 'Название', 'Статус', 'Приоритет', 'Исполнитель', 'Срок', 'Загрузка'];
+        const headers = ['ID', 'Регион', 'Тип', 'Название', 'Приоритет', 'Срок', 'Статус', 'Исполнитель'];
         const rows = this.filteredTasks.map(task => [
-            task.id,
-            task.title,
-            task.status,
-            task.priority,
-            task.assignee,
-            task.deadline,
-            task.workload
+            task.id, task.region, task.type, task.title, task.priority, 
+            task.dueDate, task.status, this.getAssigneeName(task.currentAssignee) || '-'
         ]);
         
         let csv = headers.join(',') + '\n';
@@ -432,13 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Закрытие модальных окон по клику вне их
 window.onclick = function(event) {
-    const taskModal = document.getElementById('task-modal');
-    const freeHandsModal = document.getElementById('free-hands-modal');
-    
-    if (event.target === taskModal) {
-        app.closeModal();
-    }
-    if (event.target === freeHandsModal) {
-        app.closeFreeHandsModal();
+    if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('active');
     }
 };
