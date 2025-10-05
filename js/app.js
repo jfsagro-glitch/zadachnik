@@ -659,8 +659,67 @@ class ZadachnikApp {
     
     showAnalytics() {
         const user = this.auth.getCurrentUser();
-        const region = user.role === 'superuser' ? null : user.region;
         
+        if (user.role === 'superuser') {
+            // Суперпользователь видит аналитику по регионам
+            this.showRegionAnalytics();
+        } else {
+            // Руководитель видит аналитику по сотрудникам своего региона
+            this.showEmployeeAnalytics(user.region);
+        }
+    }
+    
+    showRegionAnalytics() {
+        const regionStats = this.analytics.getRegionStatistics(this.tasks);
+        
+        const content = document.getElementById('analytics-content');
+        content.innerHTML = `
+            <div class="analytics-section">
+                <h3>📊 Аналитика по регионам</h3>
+                <p style="color:#666;font-size:13px;margin-bottom:15px;">Кликните на регион для детальной статистики по сотрудникам</p>
+                <div class="region-stats-grid">
+                    ${Object.keys(regionStats).map(region => {
+                        const stat = regionStats[region];
+                        return `
+                            <div class="region-card" onclick="app.showEmployeeAnalytics('${region}')">
+                                <div class="region-header">
+                                    <h4>${region}</h4>
+                                    <span class="region-completion">${stat.completionRate}%</span>
+                                </div>
+                                <div class="region-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Всего задач:</span>
+                                        <span class="stat-value">${stat.total}</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Завершено:</span>
+                                        <span class="stat-value">${stat.completed}</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">В работе:</span>
+                                        <span class="stat-value">${stat.inProgress}</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Просрочено:</span>
+                                        <span class="stat-value stat-danger">${stat.overdue}</span>
+                                    </div>
+                                </div>
+                                <div class="region-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${stat.completionRate}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('analytics-modal').classList.add('active');
+    }
+    
+    showEmployeeAnalytics(region) {
         // Получаем список сотрудников
         let employeesList = [];
         if (Array.isArray(this.users)) {
@@ -669,14 +728,19 @@ class ZadachnikApp {
             employeesList = this.users.employee;
         }
         
-        const employees = region ? employeesList.filter(e => e.region === region) : employeesList;
-        
+        const employees = employeesList.filter(e => e.region === region);
         const analyticsData = this.analytics.exportAnalytics(this.tasks, employees, region);
         
         const content = document.getElementById('analytics-content');
         content.innerHTML = `
             <div class="analytics-section">
-                <h3>KPI Показатели</h3>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                    <h3>📊 Аналитика: ${region}</h3>
+                    ${this.auth.getCurrentRole() === 'superuser' ? 
+                        '<button class="btn btn-sm btn-secondary" onclick="app.showRegionAnalytics()">← Назад к регионам</button>' : 
+                        ''}
+                </div>
+                
                 <div class="kpi-grid">
                     <div class="kpi-card">
                         <div class="kpi-label">Процент выполнения</div>
@@ -698,15 +762,16 @@ class ZadachnikApp {
             </div>
             
             <div class="analytics-section">
-                <h3>Статистика по сотрудникам</h3>
+                <h3>Статистика по сотрудникам (${employees.length} чел.)</h3>
                 <div class="employee-stats-table">
                     <table>
                         <thead>
                             <tr>
                                 <th>Сотрудник</th>
-                                <th>Всего задач</th>
+                                <th>Всего</th>
                                 <th>Завершено</th>
                                 <th>В работе</th>
+                                <th>Просрочено</th>
                                 <th>Загрузка</th>
                             </tr>
                         </thead>
@@ -717,6 +782,7 @@ class ZadachnikApp {
                                     <td>${emp.totalTasks}</td>
                                     <td>${emp.completed}</td>
                                     <td>${emp.inProgress}</td>
+                                    <td>${emp.overdue}</td>
                                     <td>
                                         <div class="workload-indicator">
                                             <div class="workload-fill ${emp.workload > 70 ? 'high' : emp.workload > 40 ? 'medium' : ''}" style="width: ${emp.workload}%"></div>
