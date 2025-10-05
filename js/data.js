@@ -335,7 +335,7 @@ function generateEmployees() {
 
 function generateAdditionalTasks(startId, endId) {
     const tasks = [];
-    const regions = DemoData.regions;
+    const regions = ['Москва', 'Санкт-Петербург', 'Новосибирск', 'Екатеринбург'];
     const types = ['Оценка', 'Экспертиза', 'Рецензия', 'ПРКК', 'Прочее', 'Отчетность', 'Подготовка СЗ'];
     const priorities = ['low', 'medium', 'high', 'critical'];
     const statuses = ['created', 'assigned', 'in-progress', 'paused', 'rework', 'approval', 'approved'];
@@ -358,8 +358,8 @@ function generateAdditionalTasks(startId, endId) {
             documents: [],
             comments: [],
             status: status,
-            businessUser: DemoData.users.business[i % DemoData.users.business.length].email,
-            businessUserName: DemoData.users.business[i % DemoData.users.business.length].name,
+            businessUser: 'demo.business@company.com',
+            businessUserName: 'Демо Бизнес',
             assignedTo: status !== 'created' ? [getEmployeeForRegion(region)] : [],
             currentAssignee: status !== 'created' ? getEmployeeForRegion(region) : null,
             createdAt: getDateTimeString(-Math.abs(daysOffset) - 5),
@@ -367,7 +367,7 @@ function generateAdditionalTasks(startId, endId) {
             history: [
                 {
                     date: getDateTimeString(-Math.abs(daysOffset) - 5),
-                    user: DemoData.users.business[i % DemoData.users.business.length].name,
+                    user: 'Демо Бизнес',
                     userRole: 'business',
                     action: 'Создана',
                     comment: 'Задача создана',
@@ -381,8 +381,15 @@ function generateAdditionalTasks(startId, endId) {
 }
 
 function getEmployeeForRegion(region) {
-    const employees = DemoData.users.employee.filter(e => e.region === region);
-    return employees.length > 0 ? employees[0].email : DemoData.users.employee[0].email;
+    // Возвращаем первого сотрудника региона по паттерну email
+    const regionCodes = {
+        'Москва': 'msk',
+        'Санкт-Петербург': 'spb',
+        'Новосибирск': 'nsk',
+        'Екатеринбург': 'ekb'
+    };
+    const code = regionCodes[region] || 'msk';
+    return `emp1.${code}@company.com`;
 }
 
 // Экспорт

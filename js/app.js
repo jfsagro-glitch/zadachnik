@@ -272,7 +272,16 @@ class ZadachnikApp {
         
         if (this.auth.hasPermission('assignTasks')) {
             assigneesGroup.style.display = 'block';
-            const employees = this.users.employee.filter(e => e.region === task.region);
+            
+            // Получаем список сотрудников
+            let employeesList = [];
+            if (Array.isArray(this.users)) {
+                employeesList = this.users.filter(u => u.role === 'employee');
+            } else if (this.users.employee && Array.isArray(this.users.employee)) {
+                employeesList = this.users.employee;
+            }
+            
+            const employees = employeesList.filter(e => e.region === task.region);
             assigneesList.innerHTML = employees.map(emp => `
                 <div class="assignee-item">
                     <input type="checkbox" id="emp-${emp.id}" value="${emp.email}" ${task.assignedTo && task.assignedTo.includes(emp.email) ? 'checked' : ''}>
@@ -534,7 +543,16 @@ class ZadachnikApp {
     showAnalytics() {
         const user = this.auth.getCurrentUser();
         const region = user.role === 'superuser' ? null : user.region;
-        const employees = region ? this.users.employee.filter(e => e.region === region) : this.users.employee;
+        
+        // Получаем список сотрудников
+        let employeesList = [];
+        if (Array.isArray(this.users)) {
+            employeesList = this.users.filter(u => u.role === 'employee');
+        } else if (this.users.employee && Array.isArray(this.users.employee)) {
+            employeesList = this.users.employee;
+        }
+        
+        const employees = region ? employeesList.filter(e => e.region === region) : employeesList;
         
         const analyticsData = this.analytics.exportAnalytics(this.tasks, employees, region);
         
@@ -657,15 +675,23 @@ class ZadachnikApp {
         console.log('loadEmployeesForAssign - region:', region);
         console.log('All users:', this.users);
         
-        if (!this.users.employee) {
-            console.error('users.employee is undefined!');
+        // Проверяем структуру users
+        let employeesList = [];
+        if (Array.isArray(this.users)) {
+            // Если users - массив, фильтруем по роли
+            employeesList = this.users.filter(u => u.role === 'employee');
+        } else if (this.users.employee && Array.isArray(this.users.employee)) {
+            // Если users - объект с ключом employee
+            employeesList = this.users.employee;
+        } else {
+            console.error('users.employee is undefined or not an array!');
             this.allEmployees = [];
             this.renderEmployeesSelect();
             this.renderEmployeesGrid();
             return;
         }
         
-        const employees = this.users.employee.filter(e => e.region === region);
+        const employees = employeesList.filter(e => e.region === region);
         console.log('Filtered employees for region:', employees.length);
         
         // Рассчитываем загрузку каждого сотрудника
