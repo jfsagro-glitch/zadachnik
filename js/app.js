@@ -42,6 +42,9 @@ class ZadachnikApp {
         
         // Применение фильтров и рендеринг
         this.applyFilters();
+        
+        // Проверка автопилота
+        this.checkAutopilot();
     }
     
     loadData() {
@@ -107,12 +110,23 @@ class ZadachnikApp {
     }
     
     updateUIForRole() {
+        const role = this.auth.getCurrentRole();
+        
         document.getElementById('btn-create-task').style.display = 
             this.auth.hasPermission('createTask') ? 'inline-block' : 'none';
         document.getElementById('btn-analytics').style.display = 
             (this.auth.hasPermission('viewAnalytics') || this.auth.hasPermission('viewAllAnalytics')) ? 'inline-block' : 'none';
         document.getElementById('filter-region-group').style.display = 
-            this.auth.getCurrentRole() === 'superuser' ? 'block' : 'none';
+            role === 'superuser' ? 'block' : 'none';
+        
+        // Кнопка автопилота только для руководителя
+        const btnAutopilot = document.getElementById('btn-autopilot');
+        if (role === 'manager') {
+            btnAutopilot.style.display = 'inline-block';
+            this.updateAutopilotButton();
+        } else {
+            btnAutopilot.style.display = 'none';
+        }
     }
     
     populateFilters() {
@@ -1126,6 +1140,139 @@ class ZadachnikApp {
             } else {
                 alert('❌ Ошибка: DemoData не найден');
             }
+        }
+    }
+    
+    // Автопилот для руководителя
+    toggleAutopilot() {
+        const isActive = localStorage.getItem('zadachnik_autopilot') === 'true';
+        const newState = !isActive;
+        
+        localStorage.setItem('zadachnik_autopilot', newState);
+        this.updateAutopilotButton();
+        
+        if (newState) {
+            // Включаем автопилот
+            this.runAutopilot();
+            alert('✅ Автопилот включен! Новые задачи будут автоматически распределяться на наименее загруженных сотрудников.');
+        } else {
+            // Выключаем автопилот
+            alert('⏸️ Автопилот выключен. Задачи нужно распределять вручную.');
+        }
+    }
+    
+    updateAutopilotButton() {
+        const isActive = localStorage.getItem('zadachnik_autopilot') === 'true';
+        const btn = document.getElementById('btn-autopilot');
+        const icon = document.getElementById('autopilot-icon');
+        const text = document.getElementById('autopilot-text');
+        
+        if (isActive) {
+            btn.classList.add('active');
+            icon.textContent = '🟢';
+            text.textContent = 'Автопилот ВКЛ';
+        } else {
+            btn.classList.remove('active');
+            icon.textContent = '🤖';
+            text.textContent = 'Автопилот';
+        }
+    }
+    
+    runAutopilot() {
+        const user = this.auth.getCurrentUser();
+        if (user.role !== 'manager') return;
+        
+        // Находим все задачи со статусом "created" в регионе руководителя
+        const tasksToAssign = this.tasks.filter(task => 
+            task.status === 'created' && 
+            task.region === user.region
+        );
+        
+        if (tasksToAssign.length === 0) {
+            console.log('Autopilot: No tasks to assign');
+            return;
+        }
+        
+        console.log(`Autopilot: Found ${tasksToAssign.length} tasks to assign`);
+        
+        // Получаем сотрудников региона
+        let employeesList = [];
+        if (Array.isArray(this.users)) {
+            employeesList = this.users.filter(u => u.role === 'employee');
+        } else if (this.users.employee) {
+            employeesList = this.users.employee;
+        }
+        
+        const employees = employeesList.filter(e => e.region === user.region);
+        
+        // Рассчитываем загрузку каждого сотрудника
+        const workloadByUser = {};
+        employees.forEach(emp => {
+            workloadByUser[emp.email] = 0;
+        });
+        
+        this.tasks.forEach(task => {
+            if (task.status !== 'approved' && task.assignedTo) {
+                task.assignedTo.forEach(empEmail => {
+                    if (workloadByUser[empEmail] !== undefined) {
+                        workloadByUser[empEmail]++;
+                    }
+                });
+            }
+        });
+        
+        // Распределяем задачи
+        let assignedCount = 0;
+        tasksToAssign.forEach(task => {
+            // Находим наименее загруженного сотрудника
+            let minWorkload = Infinity;
+            let selectedEmployee = null;
+            
+            employees.forEach(emp => {
+                const workload = workloadByUser[emp.email];
+                if (workload < minWorkload) {
+                    minWorkload = workload;
+                    selectedEmployee = emp;
+                }
+            });
+            
+            if (selectedEmployee) {
+                try {
+                    const updatedTask = this.workflow.assignTask(
+                        task,
+                        [selectedEmployee.email],
+                        `Автоматически распределено автопилотом на наименее загруженного сотрудника`
+                    );
+                    
+                    const index = this.tasks.findIndex(t => t.id === task.id);
+                    if (index !== -1) {
+                        this.tasks[index] = updatedTask;
+                        workloadByUser[selectedEmployee.email]++;
+                        assignedCount++;
+                    }
+                } catch (error) {
+                    console.error('Autopilot error:', error);
+                }
+            }
+        });
+        
+        if (assignedCount > 0) {
+            this.storage.saveTasks(this.tasks);
+            this.applyFilters();
+            console.log(`Autopilot: Assigned ${assignedCount} tasks`);
+        }
+    }
+    
+    // Проверка автопилота при загрузке данных
+    checkAutopilot() {
+        const isActive = localStorage.getItem('zadachnik_autopilot') === 'true';
+        const user = this.auth.getCurrentUser();
+        
+        if (isActive && user.role === 'manager') {
+            // Запускаем автопилот при загрузке
+            setTimeout(() => {
+                this.runAutopilot();
+            }, 1000);
         }
     }
     
