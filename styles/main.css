@@ -44,10 +44,43 @@ body {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
 .header h1 {
     font-size: 20px;
     font-weight: 600;
     color: var(--primary-color);
+}
+
+.role-switcher {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.role-switcher label {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.role-switcher select {
+    padding: 4px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.user-info {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
 }
 
 .header-actions {
@@ -206,17 +239,25 @@ body {
     width: 70px;
 }
 
+.col-region {
+    width: 120px;
+}
+
+.col-type {
+    width: 110px;
+}
+
 .col-title {
     min-width: 250px;
     max-width: 400px;
 }
 
 .col-status {
-    width: 120px;
+    width: 130px;
 }
 
 .col-priority {
-    width: 110px;
+    width: 90px;
 }
 
 .col-assignee {
@@ -232,7 +273,7 @@ body {
 }
 
 .col-actions {
-    width: 120px;
+    width: 150px;
     text-align: center;
 }
 
@@ -245,9 +286,14 @@ body {
     font-weight: 500;
 }
 
-.status-new {
+.status-created {
     background: #E3F2FD;
     color: #1976D2;
+}
+
+.status-assigned {
+    background: #E0F7FA;
+    color: #00838F;
 }
 
 .status-in-progress {
@@ -255,19 +301,24 @@ body {
     color: #F57C00;
 }
 
-.status-review {
+.status-paused {
+    background: #ECEFF1;
+    color: #546E7A;
+}
+
+.status-rework {
+    background: #FFEBEE;
+    color: #C62828;
+}
+
+.status-approval {
     background: #F3E5F5;
     color: #7B1FA2;
 }
 
-.status-done {
+.status-approved {
     background: #E8F5E9;
     color: #388E3C;
-}
-
-.status-paused {
-    background: #FFEBEE;
-    color: #C62828;
 }
 
 /* Приоритеты */
