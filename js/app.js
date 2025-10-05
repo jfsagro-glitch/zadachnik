@@ -4,11 +4,15 @@
 
 class ZadachnikApp {
     constructor() {
+        console.log('ZadachnikApp constructor called');
+        
         // Инициализация менеджеров
         this.storage = new StorageManager();
         this.auth = new AuthManager();
         this.workflow = new WorkflowManager(this.auth);
         this.analytics = new AnalyticsManager(this.auth);
+        
+        console.log('Managers initialized');
         
         // Состояние приложения
         this.tasks = [];
@@ -18,6 +22,7 @@ class ZadachnikApp {
         this.sortDirection = 'asc';
         this.currentTask = null;
         this.pendingAction = null;
+        this.allEmployees = [];
         
         this.init();
     }
@@ -786,8 +791,16 @@ class ZadachnikApp {
 
 // Инициализация приложения
 let app;
+
 document.addEventListener('DOMContentLoaded', () => {
-    app = new ZadachnikApp();
+    console.log('DOM loaded, initializing app...');
+    try {
+        app = new ZadachnikApp();
+        window.app = app; // Делаем глобально доступным
+        console.log('App initialized successfully');
+    } catch (error) {
+        console.error('Error initializing app:', error);
+    }
 });
 
 // Закрытие модальных окон по клику вне их
